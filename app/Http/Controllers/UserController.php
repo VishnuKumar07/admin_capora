@@ -12,9 +12,19 @@ use App\Models\User;
 use App\Models\UserDetails;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
+    public function Users(Request $request)
+    {
+        $users = UserDetails::with('users','country','job','education')->orderBy('id', 'desc')->get();
+        $jobs = Jobs::all();
+        return view('users', compact('users','jobs'));
+    }
+
+
     public function addUser(Request $request)
     {
         $countries = Country::orderby('name', 'asc')->get();
@@ -96,4 +106,201 @@ class UserController extends Controller
             'user_id' => $user->id,
         ]);
     }
+
+    public function changeuserPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id'      => 'required|exists:users,id',
+            'new_password' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $updateuserPassword = User::where('id', $request->user_id)->update([
+            'sample_pass' => $request->new_password,
+            'password'    => Hash::make($request->new_password),
+        ]);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'User password updated successfully',
+        ]);
+    }
+
+    public function deleteuserAccount(Request $request)
+    {
+        $user = User::find($request->user_id);
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not found.',
+            ], 404);
+        }
+
+        $user->deleted_by = 'Admin';
+        $user->save();
+
+        if ($user->details) {
+            $user->details()->delete();
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User deleted successfully.',
+        ]);
+
+    }
+
+    public function downloadCsv(Request $request): StreamedResponse
+    {
+        $ids             = json_decode($request->input('ids', '[]'), true);
+        $selectedColumns = json_decode($request->input('columns', '[]'), true);
+        $genderFilter    = $request->input('gender');
+        $appliedFilter   = $request->input('applied_for');
+
+        if (!is_array($ids)) {
+            $ids = [];
+        }
+        if (!is_array($selectedColumns)) {
+            $selectedColumns = [];
+        }
+
+        $availableColumns = [
+            'id'              => 'ID',
+            'name'            => 'Name',
+            'email'           => 'Email',
+            'username'        => 'Username',
+            'mobile'          => 'Mobile',
+            'gender'          => 'Gender',
+            'age'             => 'Age',
+            'dob'             => 'Date of Birth',
+            'education'       => 'Education',
+            'passport_no'     => 'Passport No',
+            'current_country' => 'Current Country',
+            'applied_for'     => 'Applied For',
+            'source'          => 'Source',
+            'created_at'      => 'Created On',
+        ];
+
+        $selectedColumns = array_values(
+            array_intersect($selectedColumns, array_keys($availableColumns))
+        );
+
+        if (empty($selectedColumns)) {
+            $selectedColumns = [
+                'id', 'name', 'email', 'username', 'mobile',
+                'gender', 'age', 'dob', 'education',
+                'passport_no', 'current_country',
+                'applied_for', 'source', 'created_at',
+            ];
+        }
+
+        if (empty($ids) && !$genderFilter && !$appliedFilter) {
+            abort(400, 'No users selected or filters provided.');
+        }
+
+        $query = UserDetails::with(['users', 'country', 'job', 'education']);
+
+        if ($genderFilter) {
+            $query->where('gender', $genderFilter);
+        }
+
+        if ($appliedFilter) {
+            $query->where('job_id', $appliedFilter);
+        }
+
+        if (!$genderFilter && !$appliedFilter && !empty($ids)) {
+            $query->whereIn('user_id', $ids);
+        }
+
+        $users = $query->get();
+
+        $filename = "selected-users.csv";
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0",
+        ];
+
+        $callback = function () use ($users, $availableColumns, $selectedColumns) {
+            $file = fopen('php://output', 'w');
+
+            $headerRow = [];
+            foreach ($selectedColumns as $col) {
+                $headerRow[] = $availableColumns[$col] ?? $col;
+            }
+            fputcsv($file, $headerRow);
+
+            foreach ($users as $u) {
+                $row = [];
+                foreach ($selectedColumns as $col) {
+                    switch ($col) {
+                        case 'id':
+                            $row[] = $u->user_id;
+                            break;
+                        case 'name':
+                            $row[] = optional($u->users)->name ?? '';
+                            break;
+                        case 'email':
+                            $row[] = optional($u->users)->email ?? '';
+                            break;
+                        case 'username':
+                            $row[] = optional($u->users)->username ?? '';
+                            break;
+                        case 'mobile':
+                            $row[] = optional($u->users)->mobile ?? '';
+                            break;
+                        case 'gender':
+                            $row[] = $u->gender ?? '';
+                            break;
+                        case 'age':
+                            $row[] = $u->age ?? '';
+                            break;
+                        case 'dob':
+                            $row[] = $u->dob ?? '';
+                            break;
+                        case 'education':
+                            $row[] = optional($u->education)->name ?? '';
+                            break;
+                        case 'passport_no':
+                            $row[] = $u->passport_no ?? '';
+                            break;
+                        case 'current_country':
+                            $row[] = optional($u->country)->name ?? '';
+                            break;
+                        case 'applied_for':
+                            $row[] = optional($u->job)->name ?? '';
+                            break;
+                        case 'source':
+                            $row[] = optional($u->users)->source ?? '';
+                            break;
+                        case 'created_at':
+                            $row[] = $u->created_at
+                                ? $u->created_at->format('d M Y, h:i A')
+                                : '';
+                            break;
+                        default:
+                            $row[] = '';
+                            break;
+                    }
+                }
+                fputcsv($file, $row);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
 }

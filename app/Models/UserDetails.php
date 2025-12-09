@@ -25,6 +25,11 @@ class UserDetails extends Model
         'sub_education_id',
     ];
 
+    public function users()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function country()
     {
         return $this->belongsTo(Country::class, 'current_location_country_id');
@@ -45,4 +50,3 @@ class UserDetails extends Model
         return $this->belongsTo(Jobs::class, 'job_id');
     }
 }
-

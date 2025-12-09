@@ -6,12 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Dashboard') - RSK Air Travels</title>
+    <title>@yield('title', 'Admin') - RSK Air Travels</title>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=DIN+Medium&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -19,6 +20,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 
     <style>
         :root {
@@ -187,7 +189,7 @@
         }
 
         .dash-sidebar {
-            width: 270px;
+            width: 250px;
             background: linear-gradient(180deg, #020617, #020617 140px, #020617 0, #020617);
             color: #e2e8f0;
             padding: 18px 16px 18px 16px;
@@ -309,8 +311,11 @@
         .dash-main-wrapper {
             flex: 1;
             padding: 20px 26px;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 72px);
+            overflow-x: hidden;
         }
-
 
         .page-header {
             display: flex;
@@ -489,7 +494,6 @@
 
         .select2-invalid .select2-selection {
             border: 1px solid #dc3545 !important;
-            /* red */
         }
 
         .select2-valid .select2-selection {
@@ -573,7 +577,8 @@
                             <div class="sidebar-section-title">User Management</div>
                             <ul class="dash-menu">
                                 <li>
-                                    <a href="#" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                                    <a href="{{ route('users') }}"
+                                        class="{{ request()->routeIs('users') ? 'active' : '' }}">
                                         <span class="icon"> <i class="fa fa-users"></i> </span> <span
                                             class="label">All
                                             Users</span> </a>
@@ -582,6 +587,13 @@
                                         class="{{ request()->routeIs('add.users') ? 'active' : '' }}"> <span
                                             class="icon"> <i class="fa fa-user-plus"></i> </span> <span
                                             class="label">Add User</span> </a> </li>
+                                <li>
+                                    <a href="#"
+                                        class="{{ request()->routeIs('deleted.users') ? 'active' : '' }}">
+                                        <span class="icon"> <i class="fa fa-user-slash"></i> </span>
+                                        <span class="label">Deleted Users</span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
 
@@ -622,8 +634,8 @@
                         <div>
                             <div class="sidebar-section-title">System</div>
                             <ul class="dash-menu">
-                                <li> <a href="#"
-                                        class="{{ request()->routeIs('password.change') ? 'active' : '' }}"> <span
+                                <li> <a href="{{ route('change.password') }}"
+                                        class="{{ request()->routeIs('change.password') ? 'active' : '' }}"> <span
                                             class="icon"> <i class="fa fa-key"></i> </span> <span
                                             class="label">Change Password</span> </a> </li>
                                 <li> <a href="#" id="logout_btn"> <span class="icon"> <i
@@ -788,6 +800,21 @@
                     }
                 }).trigger('resize');
             });
+
+            const $sidebarScroll = $('.sidebar-scroll');
+            const $activeItem = $sidebarScroll.find('.dash-menu a.active').first();
+
+            if ($activeItem.length) {
+                const sidebarHeight = $sidebarScroll.height();
+                const itemTop = $activeItem.position().top;
+                const itemBottom = itemTop + $activeItem.outerHeight();
+                if (itemBottom > sidebarHeight || itemTop < 0) {
+                    const targetScroll = itemTop - 60;
+                    $sidebarScroll.animate({
+                        scrollTop: targetScroll
+                    }, 300);
+                }
+            }
         })
     </script>
 

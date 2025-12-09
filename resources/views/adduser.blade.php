@@ -12,7 +12,13 @@
         }
     </style>
     <div class="card-panel">
-        <h4 class="mb-3 fw-bold">Add New User</h4>
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 fw-bold">Add New User</h4>
+            <a href="{{ route('users') }}" class="px-3 py-2 btn btn-primary-gradient">
+                <i class="fa fa-users"></i> All Users
+            </a>
+        </div>
+
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label fw-semibold">Name&nbsp;<span class="text-danger">*</span></label>
