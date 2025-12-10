@@ -264,6 +264,17 @@
             font-weight: 600;
         }
 
+        .btn-change-password {
+            background-color: #22c55e !important;
+            color: #fff !important;
+            border: 1px solid #16a34a;
+        }
+
+        .btn-change-password:hover {
+            background-color: #16a34a !important;
+        }
+
+
         @media (max-width: 768px) {
             .users-card-header {
                 flex-direction: column;
@@ -435,25 +446,29 @@
                                             {{ $source }}
                                         </span>
                                     </td>
-
                                     <td>
                                         <span class="users-date-pill">
                                             {{ $u->created_at ? $u->created_at->format('d M Y, h:i A') : '—' }}
                                         </span>
                                     </td>
-
                                     <td>
                                         <div class="gap-1 d-flex align-items-center">
-                                            <a href="#" class="btn btn-primary btn-sm" title="View more">
+                                            <a href="{{ route('view.profile', encrypt($u->users->id)) }}"
+                                                class="btn btn-primary btn-sm" title="View more">
                                                 <i class="fa fa-eye me-1"></i>
                                             </a>
-                                            <button type="button" class="btn btn-light btn-sm change-pass-btn"
+                                            <a href="{{ route('edit.profile', encrypt($u->users->id)) }}"
+                                                class="btn btn-warning btn-sm" title="Edit User">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-change-password btn-sm change-pass-btn"
                                                 data-bs-toggle="modal" data-bs-target="#changePasswordModal"
                                                 data-user-id="{{ $u->users->id }}"
                                                 data-user-name="{{ $u->users->name ?? ($u->users->username ?? ($u->users->email ?? 'User')) }}"
                                                 title="Change Password">
                                                 <i class="fa fa-key"></i>
                                             </button>
+
                                             <button type="button" class="btn btn-danger btn-sm delete-user-btn"
                                                 data-user-id="{{ $u->users->id }}"
                                                 data-user-name="{{ $u->users->name ?? ($u->users->username ?? ($u->users->email ?? 'User')) }}"
@@ -693,11 +708,6 @@
                             <option value="Male">Male (all users)</option>
                             <option value="Female">Female (all users)</option>
                         </select>
-                        {{-- <div class="mt-1 small text-muted">
-                            - Keep it on <strong>“Use selected users only”</strong> to export only the checked users.<br>
-                            - Choose <strong>“Male (all users)”</strong> or <strong>“Female (all users)”</strong> to export
-                            all users of that gender (no need to select rows).
-                        </div> --}}
                     </div>
 
                     <div class="mt-3">
@@ -709,16 +719,7 @@
                             @endforeach
 
                         </select>
-                        {{-- <div class="mt-1 small text-muted">
-                            - Leave this empty to not filter by job.<br>
-                            - Choose one of the jobs to export all users who applied for that job.
-                        </div> --}}
                     </div>
-
-                    {{-- <div class="mt-2 small text-muted">
-                        Example: If you need only <strong>Name</strong> and <strong>Username</strong>, select those two and
-                        uncheck others.
-                    </div> --}}
                 </div>
 
                 <div class="modal-footer">
@@ -849,7 +850,6 @@
                     ids = [];
                 }
 
-                // 🔽 validation: at least one of ids / gender / applied_for must be used
                 if (!genderFilter && !appliedFilter && (!ids || ids.length == 0)) {
                     Swal.fire({
                         icon: "warning",

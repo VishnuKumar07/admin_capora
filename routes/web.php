@@ -31,7 +31,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/change-user-password', [UserController::class, 'changeuserPassword'])->name('change.user.password');
     Route::delete('/delete-user-account', [UserController::class, 'deleteuserAccount'])->name('delete.user.account');
     Route::post('/users/download-csv', [UserController::class, 'downloadCsv'])->name('users.csv.download');
-    
+    Route::get('/view/profile/{id}', [UserController::class, 'viewProfile'])->name('view.profile');
+    Route::get('/edit/profile/{id}', [UserController::class, 'editProfile'])->name('edit.profile');
+    Route::post('/update/profile', [UserController::class, 'updateProfile'])->name('update.profile');
+
 
     Route::get('/change-password', [ChangePasswordController::class, 'index'])->name('change.password');
     Route::post('/update-password', [ChangePasswordController::class, 'updatePassword'])->name('update.password');

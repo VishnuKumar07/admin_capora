@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Validation\Rule;
+
 
 class UserController extends Controller
 {
@@ -132,6 +135,91 @@ class UserController extends Controller
         ]);
     }
 
+    public function viewProfile(string $encryptedId)
+    {
+        try {
+            $userId = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404);
+        }
+
+        $userDetails = UserDetails::with(['users', 'country', 'job', 'education'])->where('user_id', $userId)->firstOrFail();
+        return view('view-profile', compact('userDetails'));
+
+    }
+
+    public function editProfile(string $encryptedId)
+    {
+        try {
+            $userId = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404);
+        }
+        $countries = Country::orderby('name', 'asc')->get();
+        $jobs = Jobs::orderby('name','asc')->get();
+        $educations = Education::orderby('name','asc')->get();
+        $userDetails = UserDetails::with(['users', 'country', 'job', 'education'])->where('user_id', $userId)->firstOrFail();
+        return view('edit-profile', compact('userDetails','countries','jobs','educations'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id'           => 'required|exists:users,id',
+            'name'         => 'required|string|max:255',
+            'mobile' => [
+                'required',
+                'digits:10',
+                Rule::unique('users', 'mobile')->ignore($request->id),
+            ],
+            'email' => [
+                'nullable',
+                'email',
+                Rule::unique('users', 'email')->ignore($request->id),
+            ],
+            'country_code' => 'required|string|max:10',
+            'country_id'   => 'required|exists:countries,id',
+            'dob'          => 'required|date',
+            'age'          => 'required|integer|min:0|max:120',
+            'gender'       => 'required|in:Male,Female',
+            'passport_no'  => 'required|string|max:50',
+            'job_id'       => 'required|exists:jobs,id',
+            'education_id' => 'required|exists:education,id',
+            'subeducation' => 'nullable|exists:sub_education,id',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $updateUser = User::where('id', $request->id)->update([
+            'name'            => $request->name,
+            'email'           => $request->email,
+            'mobile'          => $request->mobile,
+            'country_code'    => $request->country_code,
+        ]);
+
+        $updateuserDetails = UserDetails::where('user_id', $request->id)->update([
+            'current_location_country_id'  => $request->country_id,
+            'gender'                       =>  $request->gender,
+            'dob'                          =>  $request->dob,
+            'age'                          =>  $request->age,
+            'passport_no'                  =>  $request->passport_no,
+            'job_id'                       =>  $request->job_id,
+            'education_id'                 =>  $request->education_id,
+            'sub_education_id'             =>  $request->subeducation,
+        ]);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'User Details updated successfully',
+        ]);
+    }
+
     public function deleteuserAccount(Request $request)
     {
         $user = User::find($request->user_id);
@@ -141,16 +229,12 @@ class UserController extends Controller
                 'message' => 'User not found.',
             ], 404);
         }
-
         $user->deleted_by = 'Admin';
         $user->save();
-
         if ($user->details) {
             $user->details()->delete();
         }
-
         $user->delete();
-
         return response()->json([
             'status' => true,
             'message' => 'User deleted successfully.',
