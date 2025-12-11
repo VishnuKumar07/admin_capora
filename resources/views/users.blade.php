@@ -337,7 +337,7 @@
                                 <th class="hidden">Education</th>
                                 <th class="hidden">Passport Number</th>
                                 <th class="hidden">Current Country</th>
-                                <th>Applied For</th>
+                                <th>Job Category</th>
                                 <th>Source</th>
                                 <th>Created On</th>
                                 <th>Actions</th>
@@ -427,7 +427,7 @@
                                     </td>
                                     <td>
                                         <span class="user-text-main">
-                                            {{ $u->job->name ?? '—' }}
+                                            {{ $u->jobcategory->name ?? '—' }}
                                         </span>
                                     </td>
                                     <td>
@@ -487,7 +487,7 @@
                         <input type="hidden" name="ids" id="csv_ids">
                         <input type="hidden" name="columns" id="csv_columns">
                         <input type="hidden" name="gender" id="csv_gender">
-                        <input type="hidden" name="applied_for" id="csv_applied_for">
+                        <input type="hidden" name="jobcategory" id="csv_jobcategory">
                     </form>
 
 
@@ -674,10 +674,10 @@
                         </div>
                         <div class="mb-2 col-4">
                             <div class="form-check">
-                                <input class="form-check-input csv-column-checkbox" type="checkbox" value="applied_for"
-                                    id="col_applied_for" checked>
-                                <label class="form-check-label" for="col_applied_for">
-                                    Applied For
+                                <input class="form-check-input csv-column-checkbox" type="checkbox" value="jobcategory"
+                                    id="col_jobcategory" checked>
+                                <label class="form-check-label" for="col_jobcategory">
+                                    Job Category
                                 </label>
                             </div>
                         </div>
@@ -711,13 +711,12 @@
                     </div>
 
                     <div class="mt-3">
-                        <label class="form-label" for="csv_applied_for_filter">Filter by Applied For (optional)</label>
-                        <select id="csv_applied_for_filter" class="form-select form-select-sm">
+                        <label class="form-label" for="csv_jobcategory_filter">Filter by Job Category (optional)</label>
+                        <select id="csv_jobcategory_filter" class="form-select form-select-sm">
                             <option value="">Use selected users only / all jobs</option>
-                            @foreach ($jobs as $job)
-                                <option value="{{ $job->id }}">{{ $job->name }}</option>
+                            @foreach ($jobcategories as $jobcategy)
+                                <option value="{{ $jobcategy->id }}">{{ $jobcategy->name }}</option>
                             @endforeach
-
                         </select>
                     </div>
                 </div>
@@ -840,7 +839,7 @@
                 }
 
                 let genderFilter = $("#csv_gender_filter").val() || "";
-                let appliedFilter = $("#csv_applied_for_filter").val() || "";
+                let appliedFilter = $("#csv_jobcategory_filter").val() || "";
                 let idsJson = $("#csv_ids").val() || "[]";
                 let ids = [];
 
@@ -861,7 +860,7 @@
 
                 $("#csv_columns").val(JSON.stringify(selectedColumns));
                 $("#csv_gender").val(genderFilter);
-                $("#csv_applied_for").val(appliedFilter);
+                $("#csv_jobcategory").val(appliedFilter);
 
                 $('#csvColumnsModal').modal('hide');
                 $("#downloadCsvForm").submit();

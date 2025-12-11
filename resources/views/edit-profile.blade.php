@@ -692,22 +692,22 @@
                         </div>
 
                         <div class="edit-field">
-                            <label class="edit-label" for="job_id">Applied For&nbsp;<span
+                            <label class="edit-label" for="jobcategory">Job Category&nbsp;<span
                                     class="text-danger ">*</span></label>
                             <div class="edit-input-wrapper">
-                                <select id="job_id" name="job_id" class="edit-select select2">
-                                    <option value="">Select job</option>
-                                    @isset($jobs)
-                                        @foreach ($jobs as $job)
-                                            <option value="{{ $job->id }}"
-                                                {{ old('job_id', $userDetails->job_id) == $job->id ? 'selected' : '' }}>
-                                                {{ $job->name }}
+                                <select id="jobcategory" name="jobcategory" class="edit-select select2">
+                                    <option value="">Select Job Category</option>
+                                    @isset($jobcategories)
+                                        @foreach ($jobcategories as $jobcategory)
+                                            <option value="{{ $jobcategory->id }}"
+                                                {{ old('job_category_id', $userDetails->job_category_id) == $jobcategory->id ? 'selected' : '' }}>
+                                                {{ $jobcategory->name }}
                                             </option>
                                         @endforeach
                                     @endisset
                                 </select>
                             </div>
-                            <span class="text-danger" id="job_id_error"></span>
+                            <span class="text-danger" id="jobcategory_error"></span>
                         </div>
 
                         <div class="edit-field">
@@ -730,7 +730,7 @@
                         </div>
 
                         <div class="edit-field" id="subeducation-wrapper" style="display: none">
-                            <label class="edit-label" for="job_id">Sub Education&nbsp;<span
+                            <label class="edit-label" for="subeducation">Sub Education&nbsp;<span
                                     class="text-danger">*</span></label>
                             <select name="subeducation" id="subeducation" class="mt-2 form-control select2">
                                 <option value="">Select Sub Education</option>
@@ -881,7 +881,7 @@
                 let age = $("#age").val();
                 let gender = $("#gender").val();
                 let passport_no = $("#passport_no").val();
-                let job_id = $("#job_id").val();
+                let jobcategory = $("#jobcategory").val();
                 let country_id = $("#country_id").val();
                 let education_id = $("#education_id").val();
                 let subeducation = $("#subeducation").val();
@@ -971,12 +971,12 @@
                     $("#passport_no_error").text("");
                 }
 
-                if (job_id == '' || job_id == null) {
-                    $("#job_id_error").text("Please select job");
-                    $("#job_id").focus();
+                if (jobcategory == '' || jobcategory == null) {
+                    $("#jobcategory_error").text("Please select job");
+                    $("#jobcategory").focus();
                     return;
                 } else {
-                    $("#job_id_error").text("");
+                    $("#jobcategory_error").text("");
                 }
 
                 if (education_id == '' || education_id == null) {
@@ -1011,11 +1011,11 @@
                         country_code: country_code,
                         country_id: country_id,
                         dob: dob,
-                        email : email,
+                        email: email,
                         age: age,
                         gender: gender,
                         passport_no: passport_no,
-                        job_id: job_id,
+                        jobcategory: jobcategory,
                         education_id: education_id,
                         subeducation: subeducation
 

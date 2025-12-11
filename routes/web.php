@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\JobController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,6 +35,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/view/profile/{id}', [UserController::class, 'viewProfile'])->name('view.profile');
     Route::get('/edit/profile/{id}', [UserController::class, 'editProfile'])->name('edit.profile');
     Route::post('/update/profile', [UserController::class, 'updateProfile'])->name('update.profile');
+    Route::get('/deleted-users', [UserController::class, 'deletedUser'])->name('deleted.users');
+    Route::put('/users/restore/{id}', [UserController::class, 'restore'])->name('user.restore');
+
+    Route::get('/create-job', [JobController::class, 'createJob'])->name('create.job');
+    Route::post('/get-currency', [JobController::class, 'getCurrency'])->name('get.currency');
+
 
 
     Route::get('/change-password', [ChangePasswordController::class, 'index'])->name('change.password');

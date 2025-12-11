@@ -78,23 +78,22 @@
                 <input type="text" id="passport_no" name="passport_no" class="form-control"
                     placeholder="Enter your passport number">
                 <span class="text-danger" id="passport_no_error"></span>
-
             </div>
 
             <div class="col-md-6">
-                <label for="apply_for" class="form-label">Apply For
+                <label for="jobcategory" class="form-label">Job Category
                     <span class="text-danger">*</span></label>
-                <select name="apply_for" id="apply_for" class="form-control select2">
+                <select name="jobcategory" id="jobcategory" class="form-control select2">
                     <option value="">Select Job</option>
-                    @foreach ($jobs as $job)
-                        <option value="{{ $job->id }}">{{ $job->name }}
-                            @if (!empty($job->name_tamil))
-                                ({{ $job->name_tamil }})
+                    @foreach ($jobcategories as $jobcategory)
+                        <option value="{{ $jobcategory->id }}">{{ $jobcategory->name }}
+                            @if (!empty($jobcategory->name_tamil))
+                                ({{ $jobcategory->name_tamil }})
                             @endif
                         </option>
                     @endforeach
                 </select>
-                <span class="text-danger" id="apply_for_error"></span>
+                <span class="text-danger" id="jobcategory_error"></span>
             </div>
 
             <div class="col-md-6">
@@ -256,7 +255,7 @@
                 let age = $("#age").val();
                 age = age.replace(/[^0-9]/g, '');
                 let passport_no = $("#passport_no").val();
-                let apply_for = $("#apply_for").val();
+                let jobcategory = $("#jobcategory").val();
                 let password = $("#password").val();
                 let confirm_password = $("#confirm_password").val();
                 let gender = $("#gender").val();
@@ -323,12 +322,12 @@
                     $("#passport_no_error").text("");
                 }
 
-                if (apply_for == "") {
-                    $("#apply_for_error").text("Please choose a job to apply for");
-                    $("#apply_for").focus();
+                if (jobcategory == "") {
+                    $("#jobcategory_error").text("Please choose your job category");
+                    $("#jobcategory").focus();
                     return false;
                 } else {
-                    $("#apply_for_error").text("");
+                    $("#jobcategory_error").text("");
                 }
 
                 if (password == "") {
@@ -393,8 +392,8 @@
                         country_code: country_code,
                         dob: dob,
                         age: age,
-                        passport_no: passport_no,
-                        apply_for: apply_for,
+                        passport_no : passport_no,
+                        jobcategory : jobcategory,
                         password: password,
                         gender: gender,
                         education: education,

@@ -8,6 +8,7 @@ use App\Models\Country;
 use App\Models\Education;
 use App\Models\SubEducation;
 use App\Models\Jobs;
+use App\Models\JobCategory;
 use App\Models\User;
 use App\Models\UserDetails;
 use Illuminate\Support\Facades\Hash;
@@ -22,18 +23,18 @@ class UserController extends Controller
 {
     public function Users(Request $request)
     {
-        $users = UserDetails::with('users','country','job','education')->orderBy('id', 'desc')->get();
-        $jobs = Jobs::all();
-        return view('users', compact('users','jobs'));
+        $users = UserDetails::with('users','country','jobcategory','education')->orderBy('id', 'desc')->get();
+        $jobcategories = JobCategory::orderby('name', 'asc')->get();
+        return view('users', compact('users','jobcategories'));
     }
 
 
     public function addUser(Request $request)
     {
         $countries = Country::orderby('name', 'asc')->get();
-        $jobs = Jobs::orderby('name', 'asc')->get();
+        $jobcategories = JobCategory::orderby('name', 'asc')->get();
         $educations = Education::orderby('name', 'asc')->get();
-        return view('adduser',compact('countries','jobs','educations'));
+        return view('adduser',compact('countries','jobcategories','educations'));
     }
 
     public function getSubeducation(Request $request)
@@ -54,6 +55,7 @@ class UserController extends Controller
 
     public function createUser(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'name'         => 'required|string|max:255',
             'mobile'       => 'required|digits:10|unique:users,mobile',
@@ -62,7 +64,7 @@ class UserController extends Controller
             'dob'          => 'required|date',
             'age'          => 'required|integer|min:0|max:120',
             'passport_no'  => 'required|string|max:50',
-            'apply_for'    => 'required|exists:jobs,id',
+            'jobcategory'  => 'required|exists:job_category,id',
             'gender'       => 'required|in:Male,Female',
             'education'    => 'required|exists:education,id',
             'subeducation' => 'nullable|exists:sub_education,id',
@@ -98,7 +100,7 @@ class UserController extends Controller
             'dob'                         => $request->dob,
             'age'                         => $request->age,
             'passport_no'                 => $request->passport_no,
-            'job_id'                      => $request->apply_for,
+            'job_category_id'             => $request->jobcategory,
             'education_id'                => $request->education,
             'sub_education_id'            => $request->subeducation,
         ]);
@@ -109,6 +111,24 @@ class UserController extends Controller
             'user_id' => $user->id,
         ]);
     }
+
+    public function deletedUser(Request $request)
+    {
+        $deletedUsers = User::onlyTrashed()->get();
+        return view('deleted-user', compact('deletedUsers'));
+    }
+
+    public function restore($id)
+    {
+        $user = User::onlyTrashed()->findOrFail($id);
+        $user->restore();
+        $user->update([
+            'deleted_by' => null
+        ]);
+        UserDetails::where('user_id', $id)->onlyTrashed()->restore();
+        return redirect()->back()->with('success', 'User restored successfully');
+    }
+
 
     public function changeuserPassword(Request $request)
     {
@@ -143,7 +163,7 @@ class UserController extends Controller
             abort(404);
         }
 
-        $userDetails = UserDetails::with(['users', 'country', 'job', 'education'])->where('user_id', $userId)->firstOrFail();
+        $userDetails = UserDetails::with(['users', 'country', 'jobcategory', 'education'])->where('user_id', $userId)->firstOrFail();
         return view('view-profile', compact('userDetails'));
 
     }
@@ -156,10 +176,11 @@ class UserController extends Controller
             abort(404);
         }
         $countries = Country::orderby('name', 'asc')->get();
-        $jobs = Jobs::orderby('name','asc')->get();
+        $jobcategories = JobCategory::orderby('name', 'asc')->get();
         $educations = Education::orderby('name','asc')->get();
-        $userDetails = UserDetails::with(['users', 'country', 'job', 'education'])->where('user_id', $userId)->firstOrFail();
-        return view('edit-profile', compact('userDetails','countries','jobs','educations'));
+        $userDetails = UserDetails::with(['users', 'country', 'jobcategory', 'education'])->where('user_id', $userId)->firstOrFail();
+        // dd($userDetails);
+        return view('edit-profile', compact('userDetails','countries','jobcategories','educations'));
     }
 
     public function updateProfile(Request $request)
@@ -183,7 +204,7 @@ class UserController extends Controller
             'age'          => 'required|integer|min:0|max:120',
             'gender'       => 'required|in:Male,Female',
             'passport_no'  => 'required|string|max:50',
-            'job_id'       => 'required|exists:jobs,id',
+            'jobcategory'  => 'required|exists:job_category,id',
             'education_id' => 'required|exists:education,id',
             'subeducation' => 'nullable|exists:sub_education,id',
         ]);
@@ -209,7 +230,7 @@ class UserController extends Controller
             'dob'                          =>  $request->dob,
             'age'                          =>  $request->age,
             'passport_no'                  =>  $request->passport_no,
-            'job_id'                       =>  $request->job_id,
+            'job_category_id'              =>  $request->jobcategory,
             'education_id'                 =>  $request->education_id,
             'sub_education_id'             =>  $request->subeducation,
         ]);
@@ -244,10 +265,10 @@ class UserController extends Controller
 
     public function downloadCsv(Request $request): StreamedResponse
     {
-        $ids             = json_decode($request->input('ids', '[]'), true);
+        $ids = json_decode($request->input('ids', '[]'), true);
         $selectedColumns = json_decode($request->input('columns', '[]'), true);
-        $genderFilter    = $request->input('gender');
-        $appliedFilter   = $request->input('applied_for');
+        $genderFilter = $request->input('gender');
+        $jobcategoryFilter = $request->input('jobcategory');
 
         if (!is_array($ids)) {
             $ids = [];
@@ -268,7 +289,7 @@ class UserController extends Controller
             'education'       => 'Education',
             'passport_no'     => 'Passport No',
             'current_country' => 'Current Country',
-            'applied_for'     => 'Applied For',
+            'jobcategory'     => 'Job Category',
             'source'          => 'Source',
             'created_at'      => 'Created On',
         ];
@@ -282,26 +303,36 @@ class UserController extends Controller
                 'id', 'name', 'email', 'username', 'mobile',
                 'gender', 'age', 'dob', 'education',
                 'passport_no', 'current_country',
-                'applied_for', 'source', 'created_at',
+                'jobcategory', 'source', 'created_at',
             ];
         }
 
-        if (empty($ids) && !$genderFilter && !$appliedFilter) {
+        if (empty($ids) && !$genderFilter && !$jobcategoryFilter) {
             abort(400, 'No users selected or filters provided.');
         }
 
-        $query = UserDetails::with(['users', 'country', 'job', 'education']);
+        $query = UserDetails::with(['users', 'country', 'jobcategory', 'education']);
+
+        if (!empty($ids)) {
+            $ids = array_values(array_filter($ids, function ($v) {
+                return is_numeric($v);
+            }));
+            if (!empty($ids)) {
+                $query->whereIn('user_id', $ids);
+            }
+        }
 
         if ($genderFilter) {
             $query->where('gender', $genderFilter);
         }
 
-        if ($appliedFilter) {
-            $query->where('job_id', $appliedFilter);
-        }
-
-        if (!$genderFilter && !$appliedFilter && !empty($ids)) {
-            $query->whereIn('user_id', $ids);
+        if ($jobcategoryFilter) {
+            if (is_numeric($jobcategoryFilter)) {
+                $jobcategoryFilter = (int) $jobcategoryFilter;
+                $query->where('job_category_id', $jobcategoryFilter);
+            } else {
+                $query->where('job_category_id', $jobcategoryFilter);
+            }
         }
 
         $users = $query->get();
@@ -362,8 +393,8 @@ class UserController extends Controller
                         case 'current_country':
                             $row[] = optional($u->country)->name ?? '';
                             break;
-                        case 'applied_for':
-                            $row[] = optional($u->job)->name ?? '';
+                        case 'jobcategory':
+                            $row[] = optional($u->jobcategory)->name ?? '';
                             break;
                         case 'source':
                             $row[] = optional($u->users)->source ?? '';
@@ -383,8 +414,6 @@ class UserController extends Controller
 
             fclose($file);
         };
-
         return response()->stream($callback, 200, $headers);
     }
-
 }

@@ -20,7 +20,7 @@ class UserDetails extends Model
         'dob',
         'age',
         'passport_no',
-        'job_id',
+        'job_category_id',
         'education_id',
         'sub_education_id',
     ];
@@ -45,8 +45,8 @@ class UserDetails extends Model
         return $this->belongsTo(SubEducation::class, 'sub_education_id');
     }
 
-    public function job()
+    public function jobcategory()
     {
-        return $this->belongsTo(Jobs::class, 'job_id');
+        return $this->belongsTo(JobCategory::class, 'job_category_id');
     }
 }

@@ -771,9 +771,9 @@
                         </div>
 
                         <div class="detail-item">
-                            <div class="detail-label">Applied For</div>
-                            <div class="detail-value {{ $userDetails->job->name ? '' : 'Not updated' }}">
-                                {{ $userDetails->job->name ? $userDetails->job->name : 'Not updated' }}
+                            <div class="detail-label">Job Category</div>
+                            <div class="detail-value {{ $userDetails->jobcategory->name ? '' : 'Not updated' }}">
+                                {{ $userDetails->jobcategory->name ? $userDetails->jobcategory->name : 'Not updated' }}
                             </div>
                         </div>
 
@@ -798,4 +798,3 @@
         </div>
     </div>
 @endsection
-

@@ -21,6 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <style>
         :root {
@@ -582,7 +583,7 @@
                                             class="icon"> <i class="fa fa-user-plus"></i> </span> <span
                                             class="label">Add User</span> </a> </li>
                                 <li>
-                                    <a href="#"
+                                    <a href="{{ route('deleted.users') }}"
                                         class="{{ request()->routeIs('deleted.users') ? 'active' : '' }}">
                                         <span class="icon"> <i class="fa fa-user-slash"></i> </span>
                                         <span class="label">Deleted Users</span>
@@ -595,10 +596,10 @@
                             <div class="sidebar-section-title">Jobs Management</div>
                             <ul class="dash-menu">
                                 <li>
-                                    <a href="#"
-                                        class="{{ request()->routeIs('admin.jobs.create') ? 'active' : '' }}">
+                                    <a href="{{ route('create.job') }}"
+                                        class="{{ request()->routeIs('create.job') ? 'active' : '' }}">
                                         <span class="icon"><i class="fa fa-briefcase"></i></span>
-                                        <span class="label">Add Job</span>
+                                        <span class="label">Create Job</span>
                                     </a>
                                 </li>
                                 <li>
