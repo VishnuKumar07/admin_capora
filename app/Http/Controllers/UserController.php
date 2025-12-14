@@ -25,7 +25,7 @@ class UserController extends Controller
     {
         $users = UserDetails::with('users','country','jobcategory','education')->orderBy('id', 'desc')->get();
         $jobcategories = JobCategory::orderby('name', 'asc')->get();
-        return view('users', compact('users','jobcategories'));
+        return view('users.users', compact('users','jobcategories'));
     }
 
 
@@ -34,7 +34,7 @@ class UserController extends Controller
         $countries = Country::orderby('name', 'asc')->get();
         $jobcategories = JobCategory::orderby('name', 'asc')->get();
         $educations = Education::orderby('name', 'asc')->get();
-        return view('adduser',compact('countries','jobcategories','educations'));
+        return view('users.adduser',compact('countries','jobcategories','educations'));
     }
 
     public function getSubeducation(Request $request)
@@ -115,7 +115,7 @@ class UserController extends Controller
     public function deletedUser(Request $request)
     {
         $deletedUsers = User::onlyTrashed()->get();
-        return view('deleted-user', compact('deletedUsers'));
+        return view('users.deleted-user', compact('deletedUsers'));
     }
 
     public function restore($id)
@@ -164,7 +164,7 @@ class UserController extends Controller
         }
 
         $userDetails = UserDetails::with(['users', 'country', 'jobcategory', 'education'])->where('user_id', $userId)->firstOrFail();
-        return view('view-profile', compact('userDetails'));
+        return view('users.view-profile', compact('userDetails'));
 
     }
 
@@ -180,7 +180,7 @@ class UserController extends Controller
         $educations = Education::orderby('name','asc')->get();
         $userDetails = UserDetails::with(['users', 'country', 'jobcategory', 'education'])->where('user_id', $userId)->firstOrFail();
         // dd($userDetails);
-        return view('edit-profile', compact('userDetails','countries','jobcategories','educations'));
+        return view('users.edit-profile', compact('userDetails','countries','jobcategories','educations'));
     }
 
     public function updateProfile(Request $request)

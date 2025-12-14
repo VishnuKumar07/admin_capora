@@ -12,7 +12,7 @@ class ChangePasswordController extends Controller
 {
     public function index(Request $request)
     {
-        return view('change-password');
+        return view('password.change-password');
     }
 
     public function updatePassword(Request $request)
@@ -23,7 +23,7 @@ class ChangePasswordController extends Controller
             'password.required' => 'Please enter a password',
             'password.min'      => 'Password must be at least 6 characters',
         ]);
-        
+
         $password  = $request->password;
         $userId = Auth::id();
         $updatePassword = AdminUser::where('id', $userId)->update([

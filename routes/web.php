@@ -40,8 +40,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/create-job', [JobController::class, 'createJob'])->name('create.job');
     Route::post('/get-currency', [JobController::class, 'getCurrency'])->name('get.currency');
-
-
+    Route::post('/store-job', [JobController::class, 'storeJob'])->name('store.job');
 
     Route::get('/change-password', [ChangePasswordController::class, 'index'])->name('change.password');
     Route::post('/update-password', [ChangePasswordController::class, 'updatePassword'])->name('update.password');
