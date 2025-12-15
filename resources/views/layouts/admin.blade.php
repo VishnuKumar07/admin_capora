@@ -38,9 +38,11 @@
             --success: #22c55e;
             --warning: #f59e0b;
         }
+
         * {
             box-sizing: border-box;
         }
+
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background: radial-gradient(circle at top, #e0f2fe 0, #f8fafc 40%, #eff6ff 100%);
@@ -48,9 +50,11 @@
             padding: 0;
             color: #0f172a;
         }
+
         a {
             text-decoration: none;
         }
+
         .dash-topbar {
             height: 72px;
             background: rgba(255, 255, 255, 0.95);
@@ -575,7 +579,7 @@
                             <ul class="dash-menu">
                                 <li>
                                     <a href="{{ route('users') }}"
-                                        class="{{ request()->routeIs('users','view.profile', 'edit.profile') ? 'active' : '' }}">
+                                        class="{{ request()->routeIs('users', 'view.profile', 'edit.profile') ? 'active' : '' }}">
                                         <span class="icon"> <i class="fa fa-users"></i> </span> <span
                                             class="label">All
                                             Users</span> </a>
@@ -605,22 +609,21 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#"
-                                        class="{{ request()->routeIs('admin.jobs.active') ? 'active' : '' }}">
+                                    <a href="{{ route('active.jobs') }}"
+                                        class="{{ request()->routeIs('active.jobs') ? 'active' : '' }}">
                                         <span class="icon"><i class="fa fa-list-check"></i></span>
                                         <span class="label">Active Jobs</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#"
-                                        class="{{ request()->routeIs('admin.jobs.applications.*') ? 'active' : '' }}">
+                                    <a href="#" class="#">
                                         <span class="icon"><i class="fa fa-user-check"></i></span>
                                         <span class="label">Applied Users</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#"
-                                        class="{{ request()->routeIs('admin.jobs.expired') ? 'active' : '' }}">
+                                    <a href="{{ route('expire.jobs') }}"
+                                        class="{{ request()->routeIs('expire.jobs') ? 'active' : '' }}">
                                         <span class="icon"><i class="fa fa-clock-rotate-left"></i></span>
                                         <span class="label">Expired Jobs</span>
                                     </a>

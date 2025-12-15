@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('page_title', 'Add Job')
+@section('page_title', 'Create Job')
 @section('content')
     <style>
         :root {

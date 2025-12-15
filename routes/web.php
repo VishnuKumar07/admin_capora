@@ -41,6 +41,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/create-job', [JobController::class, 'createJob'])->name('create.job');
     Route::post('/get-currency', [JobController::class, 'getCurrency'])->name('get.currency');
     Route::post('/store-job', [JobController::class, 'storeJob'])->name('store.job');
+    Route::get('/active-jobs', [JobController::class, 'activeJobs'])->name('active.jobs');
+    Route::post('/delete-job', [JobController::class, 'deleteJob'])->name('delete.job');
+    Route::post('/expire-job', [JobController::class, 'expireJob'])->name('expire.job');
+    Route::post('/update-job', [JobController::class, 'updateJob'])->name('update.job');
+    Route::get('/expire-jobs', [JobController::class, 'expireJobs'])->name('expire.jobs');
+    Route::post('/update-job-status', [JobController::class, 'updateJobStatus'])->name('update.job.status');
 
     Route::get('/change-password', [ChangePasswordController::class, 'index'])->name('change.password');
     Route::post('/update-password', [ChangePasswordController::class, 'updatePassword'])->name('update.password');
