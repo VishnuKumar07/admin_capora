@@ -168,23 +168,40 @@
                 text-align: center;
                 font-size: 14px;
             }
+
+            .search-highlight {
+                background: #fff3cd;
+                color: #92400e;
+                padding: 2px 4px;
+                border-radius: 4px;
+                font-weight: 600;
+            }
         </style>
 
-        <div class="mb-4 d-flex justify-content-between align-items-center">
+        <div class="flex-wrap gap-2 mb-4 d-flex justify-content-between align-items-center">
             <div>
                 <h4 class="mb-1 fw-bold">Active Jobs</h4>
                 <small class="text-muted">Jobs currently available for candidates</small>
             </div>
-            <span class="px-3 py-2 badge bg-success fs-6">
-                {{ $activeJobs->count() }} Active
-            </span>
+
+            <div class="gap-2 d-flex align-items-center">
+                @if ($activeJobs->count() > 0)
+                    <input type="text" id="jobSearch" class="form-control" placeholder="Search job by anything..."
+                        style="max-width: 260px;">
+                @endif
+
+
+                <span class="px-3 py-2 badge bg-success fs-6">
+                    {{ $activeJobs->count() }} Active
+                </span>
+            </div>
         </div>
 
         <div class="row g-4 align-items-stretch">
 
             @forelse($activeJobs as $job)
                 <div class="col-xl-6 col-lg-6 col-md-12">
-                    <div class="shadow-sm job-card h-100">
+                    <div class="shadow-sm job-card h-100 job-item">
 
                         <span class="status-pill">
                             <i class="fa fa-check-circle me-1"></i> Active
@@ -365,6 +382,15 @@
             @endforelse
 
         </div>
+        <div id="noResults" class="py-5 text-center d-none">
+            <i class="mb-3 fa fa-search-minus text-muted" style="font-size: 200px;"></i>
+
+            <h5 class="fw-bold text-muted">No matching jobs found</h5>
+            <p class="mb-0 text-muted">
+                Try searching with different keywords
+            </p>
+        </div>
+
     </div>
 
     <div class="modal fade" id="editJobModal" tabindex="-1">
@@ -568,6 +594,64 @@
     <script>
         $(document).ready(function() {
 
+            $('#jobSearch').on('keyup', function() {
+                let value = $(this).val().trim().toLowerCase();
+                let visibleCount = 0;
+
+                $('.job-item').each(function() {
+                    let $card = $(this);
+                    let originalText = $card.data('original-text');
+
+                    if (!originalText) {
+                        $card.data('original-text', $card.html());
+                        originalText = $card.html();
+                    }
+
+                    $card.html(originalText);
+
+                    let cardText = $card.text().toLowerCase();
+
+                    if (value === '' || cardText.includes(value)) {
+                        $card.closest('.col-xl-6').show();
+                        visibleCount++;
+
+                        if (value !== '') {
+                            highlightFullText($card, value);
+                        }
+                    } else {
+                        $card.closest('.col-xl-6').hide();
+                    }
+                });
+
+                $('.badge.bg-success').text(visibleCount + ' Active');
+
+                if (value !== '' && visibleCount === 0) {
+                    $('#noResults').removeClass('d-none');
+                } else {
+                    $('#noResults').addClass('d-none');
+                }
+            });
+
+
+
+            function highlightFullText($element, keyword) {
+                let regex = new RegExp(`(${escapeRegex(keyword)})`, 'gi');
+
+                $element.find('*').each(function() {
+                    if (this.children.length == 0) {
+                        let html = $(this).html();
+                        if (html && html.match(regex)) {
+                            $(this).html(
+                                html.replace(regex, `<span class="search-highlight">$1</span>`)
+                            );
+                        }
+                    }
+                });
+            }
+
+            function escapeRegex(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
 
             $(document).on('click', '.expire-job-btn', function() {
 

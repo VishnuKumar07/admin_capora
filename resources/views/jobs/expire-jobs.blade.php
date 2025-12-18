@@ -222,20 +222,27 @@
                 gap: 12px;
             }
         </style>
-        <div class="mb-4 d-flex justify-content-between align-items-center">
+        <div class="flex-wrap gap-2 mb-4 d-flex justify-content-between align-items-center">
             <div>
                 <h4 class="mb-1 fw-bold">Expired Jobs</h4>
                 <small class="text-muted">Jobs which are no longer active</small>
             </div>
-            <span class="px-3 py-2 badge bg-danger fs-6">
-                {{ $expiredJobs->count() }} Expired
-            </span>
+
+            <div class="gap-2 d-flex align-items-center">
+                @if ($expiredJobs->count() > 0)
+                    <input type="text" id="jobSearch" class="form-control" placeholder="Search job by anything..."
+                        style="max-width: 260px;">
+                @endif
+                <span class="px-3 py-2 badge bg-success fs-6">
+                    {{ $expiredJobs->count() }} Expired
+                </span>
+            </div>
         </div>
 
         <div class="row g-4 align-items-stretch">
             @forelse($expiredJobs as $job)
                 <div class="col-xl-6 col-lg-6 col-md-12">
-                    <div class="shadow-sm job-card h-100">
+                    <div class="shadow-sm job-card h-100 job-item">
 
                         <span class="status-pill expired">
                             <i class="fa fa-times-circle me-1"></i> Expired
@@ -248,10 +255,7 @@
                         </div>
 
                         <div class="job-card-body">
-
-                            {{-- TOP META (same as active) --}}
                             <div class="job-meta-grid">
-
                                 <div class="job-meta">
                                     <i class="fa fa-globe text-primary"></i>
                                     <span>{{ $job->country->name ?? '-' }}</span>
@@ -373,119 +377,189 @@
                 </div>
             @endforelse
         </div>
+        <div id="noResults" class="py-5 text-center d-none">
+            <i class="mb-3 fa fa-search-minus text-muted" style="font-size: 200px;"></i>
+
+            <h5 class="fw-bold text-muted">No matching jobs found</h5>
+            <p class="mb-0 text-muted">
+                Try searching with different keywords
+            </p>
+        </div>
     </div>
 @endsection
 @section('scripts')
     <script>
-        $(document).on('click', '.activate-job-btn', function() {
+        $(document).ready(function() {
+            $('#jobSearch').on('keyup', function() {
+                let value = $(this).val().trim().toLowerCase();
+                let visibleCount = 0;
 
-            let jobId = $(this).data('id');
+                $('.job-item').each(function() {
+                    let $card = $(this);
+                    let originalText = $card.data('original-text');
 
-            Swal.fire({
-                title: 'Activate Job',
-                html: `
+                    if (!originalText) {
+                        $card.data('original-text', $card.html());
+                        originalText = $card.html();
+                    }
+
+                    $card.html(originalText);
+
+                    let cardText = $card.text().toLowerCase();
+
+                    if (value == '' || cardText.includes(value)) {
+                        $card.closest('.col-xl-6').show();
+                        visibleCount++;
+
+                        if (value !== '') {
+                            highlightFullText($card, value);
+                        }
+                    } else {
+                        $card.closest('.col-xl-6').hide();
+                    }
+                });
+
+                $('.badge.bg-success').text(visibleCount + ' Active');
+
+                if (value != '' && visibleCount == 0) {
+                    $('#noResults').removeClass('d-none');
+                } else {
+                    $('#noResults').addClass('d-none');
+                }
+            });
+
+
+
+            function highlightFullText($element, keyword) {
+                let regex = new RegExp(`(${escapeRegex(keyword)})`, 'gi');
+
+                $element.find('*').each(function() {
+                    if (this.children.length == 0) {
+                        let html = $(this).html();
+                        if (html && html.match(regex)) {
+                            $(this).html(
+                                html.replace(regex, `<span class="search-highlight">$1</span>`)
+                            );
+                        }
+                    }
+                });
+            }
+
+            function escapeRegex(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            $(document).on('click', '.activate-job-btn', function() {
+
+                let jobId = $(this).data('id');
+
+                Swal.fire({
+                    title: 'Activate Job',
+                    html: `
             <label class="mb-2 form-label fw-semibold">
                 Select New Job End Date & Time
             </label>
             <input type="text" id="new_job_end" class="form-control" placeholder="Select date & time" readonly>
         `,
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: 'Activate',
-                cancelButtonText: 'Cancel',
-                confirmButtonColor: '#16a34a',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Activate',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#16a34a',
 
-                didOpen: () => {
+                    didOpen: () => {
 
-                    const now = new Date();
+                        const now = new Date();
 
-                    flatpickr("#new_job_end", {
-                        enableTime: true,
-                        noCalendar: false,
-                        time_24hr: false,
-                        dateFormat: "Y-m-d h:i K",
-                        enableMinutes: false,
-                        minuteIncrement: 60,
-                        defaultMinute: 0,
-                        minDate: "today",
-                        defaultHour: now.getHours() + 1,
-                        onReady: function(selectedDates, dateStr, instance) {
-                            hideMinutes();
-                            forceZeroMinute(instance);
-                            applyMinTime(instance);
-                        },
-                        onChange: function(selectedDates, dateStr, instance) {
-                            forceZeroMinute(instance);
-                            applyMinTime(instance);
+                        flatpickr("#new_job_end", {
+                            enableTime: true,
+                            noCalendar: false,
+                            time_24hr: false,
+                            dateFormat: "Y-m-d h:i K",
+                            enableMinutes: false,
+                            minuteIncrement: 60,
+                            defaultMinute: 0,
+                            minDate: "today",
+                            defaultHour: now.getHours() + 1,
+                            onReady: function(selectedDates, dateStr, instance) {
+                                hideMinutes();
+                                forceZeroMinute(instance);
+                                applyMinTime(instance);
+                            },
+                            onChange: function(selectedDates, dateStr, instance) {
+                                forceZeroMinute(instance);
+                                applyMinTime(instance);
+                            }
+                        });
+
+                        function applyMinTime(instance) {
+                            const selectedDate = instance.selectedDates[0];
+                            const today = new Date();
+
+                            if (!selectedDate) return;
+                            if (selectedDate.toDateString() == today.toDateString()) {
+                                const nextHour = today.getHours() + 1;
+                                instance.set('minTime', nextHour + ":00");
+                            } else {
+                                instance.set('minTime', "01:00");
+                            }
                         }
-                    });
 
-                    function applyMinTime(instance) {
-                        const selectedDate = instance.selectedDates[0];
-                        const today = new Date();
+                        function forceZeroMinute(instance) {
+                            if (!instance.selectedDates[0]) return;
 
-                        if (!selectedDate) return;
-                        if (selectedDate.toDateString() == today.toDateString()) {
-                            const nextHour = today.getHours() + 1;
-                            instance.set('minTime', nextHour + ":00");
-                        } else {
-                            instance.set('minTime', "01:00");
+                            const d = instance.selectedDates[0];
+                            d.setMinutes(0, 0);
+                            instance.setDate(d, false);
                         }
-                    }
 
-                    function forceZeroMinute(instance) {
-                        if (!instance.selectedDates[0]) return;
-
-                        const d = instance.selectedDates[0];
-                        d.setMinutes(0, 0);
-                        instance.setDate(d, false);
-                    }
-
-                    function hideMinutes() {
-                        document.querySelectorAll(
-                            ".flatpickr-minute, .flatpickr-time-separator"
-                        ).forEach(el => el.style.display = "none");
-                    }
-                },
-
-
-                preConfirm: () => {
-                    const date = document.getElementById('new_job_end').value;
-                    if (!date) {
-                        Swal.showValidationMessage('Please select expiry date & time');
-                    }
-                    return date;
-                }
-
-            }).then((result) => {
-
-                if (result.isConfirmed) {
-
-                    $.ajax({
-                        url: "{{ route('update.job.status') }}",
-                        type: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-                        },
-                        data: {
-                            id: jobId,
-                            job_end: result.value
-                        },
-                        success: function(res) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Activated',
-                                text: res.message || 'Job activated successfully',
-                                timer: 1500,
-                                showConfirmButton: false
-                            }).then(() => location.reload());
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'Unable to activate job', 'error');
+                        function hideMinutes() {
+                            document.querySelectorAll(
+                                ".flatpickr-minute, .flatpickr-time-separator"
+                            ).forEach(el => el.style.display = "none");
                         }
-                    });
-                }
+                    },
+
+
+                    preConfirm: () => {
+                        const date = document.getElementById('new_job_end').value;
+                        if (!date) {
+                            Swal.showValidationMessage('Please select expiry date & time');
+                        }
+                        return date;
+                    }
+
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        $.ajax({
+                            url: "{{ route('update.job.status') }}",
+                            type: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+                            },
+                            data: {
+                                id: jobId,
+                                job_end: result.value
+                            },
+                            success: function(res) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Activated',
+                                    text: res.message ||
+                                        'Job activated successfully',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => location.reload());
+                            },
+                            error: function() {
+                                Swal.fire('Error', 'Unable to activate job', 'error');
+                            }
+                        });
+                    }
+                });
             });
-        });
+        })
     </script>
 @endsection

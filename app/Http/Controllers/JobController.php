@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Country;
 use App\Models\Job;
 use App\Models\JobCategory;
+use App\Models\JobApplication;
 use Carbon\Carbon;
 use Svg\Tag\Rect;
 
@@ -173,6 +174,15 @@ class JobController extends Controller
             'status' => true,
             'message' => 'Job activated successfully'
         ]);
+    }
+
+    public function AppliedUsers(Request $request)
+    {
+        $jobApplications = JobApplication::with([
+            'user',
+            'job.country'
+        ])->get();
+        return view('jobs.applied-users',compact('jobApplications'));
     }
 
 

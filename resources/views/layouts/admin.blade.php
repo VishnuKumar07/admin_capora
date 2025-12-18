@@ -616,7 +616,8 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" class="#">
+                                    <a href="{{ route('applied.users') }}"
+                                        class="{{ request()->routeIs('applied.users') ? 'active' : '' }}">
                                         <span class="icon"><i class="fa fa-user-check"></i></span>
                                         <span class="label">Applied Users</span>
                                     </a>
@@ -626,6 +627,21 @@
                                         class="{{ request()->routeIs('expire.jobs') ? 'active' : '' }}">
                                         <span class="icon"><i class="fa fa-clock-rotate-left"></i></span>
                                         <span class="label">Expired Jobs</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <div class="sidebar-section-title">Enquiry</div>
+                            <ul class="dash-menu">
+                                <li>
+                                    <a href="{{ route('contact.enquiry') }}"
+                                        class="{{ request()->routeIs('contact.enquiry') ? 'active' : '' }}">
+                                        <span class="icon">
+                                            <i class="fa fa-envelope"></i>
+                                        </span>
+                                        <span class="label">Contact Enquiry</span>
                                     </a>
                                 </li>
                             </ul>

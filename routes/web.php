@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\JobController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -16,9 +18,9 @@ Route::get('/', function () {
 });
 
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -47,9 +49,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/update-job', [JobController::class, 'updateJob'])->name('update.job');
     Route::get('/expire-jobs', [JobController::class, 'expireJobs'])->name('expire.jobs');
     Route::post('/update-job-status', [JobController::class, 'updateJobStatus'])->name('update.job.status');
+    Route::get('/applied-users', [JobController::class, 'AppliedUsers'])->name('applied.users');
 
     Route::get('/change-password', [ChangePasswordController::class, 'index'])->name('change.password');
     Route::post('/update-password', [ChangePasswordController::class, 'updatePassword'])->name('update.password');
+
+    Route::get('/contact-enquiry', [EnquiryController::class, 'contactEnquiry'])->name('contact.enquiry');
 
 
 });
