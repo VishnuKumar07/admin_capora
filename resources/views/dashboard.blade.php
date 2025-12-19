@@ -120,15 +120,17 @@
         <div class="mb-4 row g-4">
 
             <div class="col-xl-3 col-md-6">
-                <div class="stat-card d-flex justify-content-between">
-                    <div>
-                        <small class="text-muted">Today Applied Candidates</small>
-                        <h3 class="mt-1 fw-bold">126</h3>
+                <a href="{{ route('applied.users') }}" class="text-decoration-none text-dark">
+                    <div class="stat-card d-flex justify-content-between">
+                        <div>
+                            <small class="text-muted">Today Applied Candidates</small>
+                            <h3 class="mt-1 fw-bold">{{ $todayjobApplicationCount ?? 0 }}</h3>
+                        </div>
+                        <div class="stat-icon bg-orange">
+                            <i class="fa fa-file-alt"></i>
+                        </div>
                     </div>
-                    <div class="stat-icon bg-orange">
-                        <i class="fa fa-file-alt"></i>
-                    </div>
-                </div>
+                </a>
             </div>
 
             <div class="col-xl-3 col-md-6">
