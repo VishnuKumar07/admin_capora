@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Admin') - RSK Air Travels</title>
+    <title>@yield('title', 'Admin') - CAPORA FASION</title>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=DIN+Medium&display=swap" rel="stylesheet" />
@@ -27,17 +27,18 @@
 
     <style>
         :root {
-            --primary: #0066ff;
-            --accent: #00d4ff;
-            --dark: #0f172a;
+            --primary: #dc2626;
+            --accent: #fb7185;
+            --dark: #111827;
             --nav-bg: #ffffff;
-            --panel-bg: #f8fafc;
-            --muted: #64748b;
-            --border-soft: #e2e8f0;
-            --danger: #ef4444;
-            --success: #22c55e;
+            --panel-bg: #fef2f2;
+            --muted: #6b7280;
+            --border-soft: #fecaca;
+            --danger: #dc2626;
+            --success: #16a34a;
             --warning: #f59e0b;
         }
+
 
         * {
             box-sizing: border-box;
@@ -118,8 +119,8 @@
             width: 9px;
             height: 9px;
             border-radius: 999px;
-            background: #22c55e;
-            box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.18);
+            background: #dc2626;
+            box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.25);
         }
 
         .user-chip {
@@ -191,7 +192,7 @@
 
         .dash-sidebar {
             width: 250px;
-            background: linear-gradient(180deg, #020617, #020617 140px, #020617 0, #020617);
+            background: linear-gradient(180deg, #7f1d1d, #450a0a 140px);
             color: #e2e8f0;
             padding: 18px 16px 18px 16px;
             border-right: 1px solid rgba(148, 163, 184, .28);
@@ -262,14 +263,14 @@
 
         .dash-menu a.active,
         .dash-menu a:hover {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: #0f172a;
+            background: linear-gradient(135deg, #dc2626, #fb7185);
+            color: #ffffff;
         }
 
         .dash-menu a.active .icon,
         .dash-menu a:hover .icon {
-            background: rgba(15, 23, 42, 0.08);
-            color: #0f172a;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
         }
 
         .sidebar-scroll {
@@ -364,12 +365,10 @@
         }
 
         .card-panel {
-            background: rgba(255, 255, 255, .96);
+            background: linear-gradient(145deg, #ffffff, #fff1f2);
             border-radius: 18px;
-            padding: 16px 18px;
-            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
-            border: 1px solid rgba(226, 232, 240, 0.95);
-            margin-bottom: 16px;
+            border: 1px solid #fecaca;
+            box-shadow: 0 14px 34px rgba(220, 38, 38, 0.15);
         }
 
         .footer-note {
@@ -502,6 +501,9 @@
         }
 
 
+        .card-panel {
+            padding: 30px;
+        }
 
         @media (max-width: 991px) {
             #mobile_menu_btn {
@@ -540,9 +542,9 @@
                 <i class="fa fa-bars" aria-hidden="true"></i>
             </button>
 
-            <img src="{{ asset('images/logo-removebg-preview.png') }}" alt="RSK" />
+            <img src="{{ asset('images/logo.png') }}" alt="RSK" />
             <div class="dash-brand-extra">
-                <div class="dash-brand-title">RSK AIR TRAVELS</div>
+                <div class="dash-brand-title">CAPORA FASION</div>
                 <div class="dash-brand-subtitle">Admin Console</div>
             </div>
         </div>
@@ -570,105 +572,147 @@
                                         <span class="icon"><i class="fa fa-chart-line"></i></span>
                                         <span class="label">Dashboard</span>
                                     </a>
+
                                 </li>
                             </ul>
                         </div>
-
                         <div>
-                            <div class="sidebar-section-title">User Management</div>
+                            <div class="sidebar-section-title">Catalog</div>
                             <ul class="dash-menu">
                                 <li>
-                                    <a href="{{ route('users') }}"
-                                        class="{{ request()->routeIs('users', 'view.profile', 'edit.profile') ? 'active' : '' }}">
-                                        <span class="icon"> <i class="fa fa-users"></i> </span> <span
-                                            class="label">All
-                                            Users</span> </a>
+                                    <a href="{{ route('products.index') }}"
+                                        class="{{ request()->routeIs('products.index*') ? 'active' : '' }}">
+                                        <span class="icon"><i class="fa-solid fa-boxes-stacked"></i></span>
+                                        <span class="label">All Product</span>
+                                    </a>
                                 </li>
-                                <li> <a href="{{ route('add.users') }}"
-                                        class="{{ request()->routeIs('add.users') ? 'active' : '' }}"> <span
-                                            class="icon"> <i class="fa fa-user-plus"></i> </span> <span
-                                            class="label">Add User</span> </a> </li>
                                 <li>
-                                    <a href="{{ route('deleted.users') }}"
-                                        class="{{ request()->routeIs('deleted.users') ? 'active' : '' }}">
-                                        <span class="icon"> <i class="fa fa-user-slash"></i> </span>
-                                        <span class="label">Deleted Users</span>
+                                    <a href="{{ route('products.create') }}"
+                                        class="{{ request()->routeIs('products.create*') ? 'active' : '' }}">
+                                        <span class="icon"><i class="fa-solid fa-square-plus"></i></span>
+                                        <span class="label">Add Product</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('categories.index') }}"
+                                        class="{{ request()->routeIs('categories.index*') ? 'active' : '' }}">
+                                        <span class="icon"><i class="fa-solid fa-layer-group"></i></span>
+                                        <span class="label">Categories</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('inventories.index') }}"
+                                        class="{{ request()->routeIs('inventories.index*') ? 'active' : '' }}">
+                                        <span class="icon"><i class="fa-solid fa-warehouse"></i></span>
+                                        <span class="label">Inventory</span>
                                     </a>
                                 </li>
                             </ul>
                         </div>
-
                         <div>
-                            <div class="sidebar-section-title">Jobs Management</div>
+                            <div class="sidebar-section-title">Orders</div>
                             <ul class="dash-menu">
                                 <li>
-                                    <a href="{{ route('create.job') }}"
-                                        class="{{ request()->routeIs('create.job') ? 'active' : '' }}">
-                                        <span class="icon"><i class="fa fa-briefcase"></i></span>
-                                        <span class="label">Create Job</span>
+                                    <a href="#">
+                                        <span class="icon"><i class="fa-solid fa-bag-shopping"></i></span>
+                                        <span class="label">All Orders</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('active.jobs') }}"
-                                        class="{{ request()->routeIs('active.jobs') ? 'active' : '' }}">
-                                        <span class="icon"><i class="fa fa-list-check"></i></span>
-                                        <span class="label">Active Jobs</span>
+                                    <a href="#">
+                                        <span class="icon"><i class="fa-solid fa-circle-check"></i></span>
+                                        <span class="label">Completed Orders</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('applied.users') }}"
-                                        class="{{ request()->routeIs('applied.users') ? 'active' : '' }}">
-                                        <span class="icon"><i class="fa fa-user-check"></i></span>
-                                        <span class="label">Applied Users</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('expire.jobs') }}"
-                                        class="{{ request()->routeIs('expire.jobs') ? 'active' : '' }}">
-                                        <span class="icon"><i class="fa fa-clock-rotate-left"></i></span>
-                                        <span class="label">Expired Jobs</span>
+                                    <a href="#">
+                                        <span class="icon"><i class="fa-solid fa-rotate-left"></i></span>
+                                        <span class="label">Returns</span>
                                     </a>
                                 </li>
                             </ul>
                         </div>
 
+                        <!-- Customers -->
                         <div>
-                            <div class="sidebar-section-title">Enquiry</div>
+                            <div class="sidebar-section-title">Customers</div>
                             <ul class="dash-menu">
                                 <li>
-                                    <a href="{{ route('contact.enquiry') }}"
-                                        class="{{ request()->routeIs('contact.enquiry') ? 'active' : '' }}">
-                                        <span class="icon">
-                                            <i class="fa fa-envelope"></i>
-                                        </span>
-                                        <span class="label">Contact Enquiry</span>
+                                    <a href="#">
+                                        <span class="icon"><i class="fa-solid fa-users"></i></span>
+                                        <span class="label">Customers</span>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+
+                        <!-- Marketing -->
+                        <div>
+                            <div class="sidebar-section-title">Marketing</div>
+                            <ul class="dash-menu">
+                                <li>
+                                    <a href="#">
+                                        <span class="icon"><i class="fa-solid fa-tags"></i></span>
+                                        <span class="label">Coupons</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <span class="icon"><i class="fa-solid fa-images"></i></span>
+                                        <span class="label">Banners</span>
                                     </a>
                                 </li>
                             </ul>
                         </div>
 
+                        <!-- Reports -->
+                        <div>
+                            <div class="sidebar-section-title">Reports</div>
+                            <ul class="dash-menu">
+                                <li>
+                                    <a href="#">
+                                        <span class="icon"><i class="fa-solid fa-chart-column"></i></span>
+                                        <span class="label">Product Report</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- System -->
                         <div>
                             <div class="sidebar-section-title">System</div>
                             <ul class="dash-menu">
-                                <li> <a href="{{ route('change.password') }}"
-                                        class="{{ request()->routeIs('change.password') ? 'active' : '' }}"> <span
-                                            class="icon"> <i class="fa fa-key"></i> </span> <span
-                                            class="label">Change Password</span> </a> </li>
-                                <li> <a href="#" id="logout_btn"> <span class="icon"> <i
-                                                class="fa fa-right-from-bracket"></i> </span> <span
-                                            class="label">Logout</span> </a>
+                                <li>
+                                    <a href="#">
+                                        <span class="icon"><i class="fa fa-gear"></i></span>
+                                        <span class="label">Settings</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('change.password') }}">
+                                        <span class="icon"><i class="fa fa-key"></i></span>
+                                        <span class="label">Change Password</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" id="logout_btn">
+                                        <span class="icon"><i class="fa fa-right-from-bracket"></i></span>
+                                        <span class="label">Logout</span>
+                                    </a>
                                     <form id="logout_form" action="{{ route('logout') }}" method="POST"
                                         style="display:none;"> @csrf </form>
                                 </li>
                             </ul>
                         </div>
+
                     </div>
 
                     <div class="sidebar-footer">
                         <div>Signed in as <strong>{{ auth()->user()->username }}</strong></div>
                         <div class="version-pill">
                             <i class="fa fa-rocket"></i>
-                            <span>RSK Admin v1.0</span>
+                            <span>KEPORA Admin v1.0</span>
                         </div>
                     </div>
 
@@ -710,7 +754,7 @@
                 </main>
 
                 <div class="footer-note">
-                    &copy; {{ date('Y') }} RSK Air Travels. Admin panel for managing users, bookings & site
+                    &copy; {{ date('Y') }} CAPORA FASION. Admin panel for managing users, bookings & site
                     content.
                 </div>
             </div>

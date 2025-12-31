@@ -6,20 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Job extends Model
+class Product extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $table = 'jobs';
+    protected $table = 'products';
     protected $guarded = ['id'];
 
-    public function country()
+    public function inventory()
     {
-        return $this->belongsTo(Country::class, 'country_id');
+        return $this->hasOne(Inventory::class);
     }
 
-    public function jobCategory()
+    public function category()
     {
-        return $this->belongsTo(JobCategory::class, 'job_category_id');
+        return $this->belongsTo(Category::class);
     }
-
 }

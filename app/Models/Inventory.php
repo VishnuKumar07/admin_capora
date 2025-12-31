@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class JobCategory extends Model
+class Inventory extends Model
 {
     use HasFactory, SoftDeletes;
+    protected $table = 'inventories';
+    protected $guarded = ['id'];
 
-    protected $table = 'job_category';
-
-    protected $fillable = [
-        'name',
-    ];
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

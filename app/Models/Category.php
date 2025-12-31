@@ -6,14 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Country extends Model
+class Category extends Model
 {
     use HasFactory, SoftDeletes;
-
-    protected $table = 'countries';
-
-    protected $fillable = [
-        'name',
-        'created_by'
-    ];
+    protected $table = 'categories';
+    protected $guarded = ['id'];
 }

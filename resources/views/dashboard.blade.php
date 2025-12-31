@@ -1,31 +1,36 @@
 @extends('layouts.admin')
-@section('page_title', 'Dashboard')
+
+@section('page_title', 'E-commerce Dashboard')
 
 @section('content')
     <div class="container-fluid">
 
         <style>
+            /* ===== Ecommerce Dashboard Theme (Red) ===== */
+
             .stat-card {
-                background: #fff;
+                background: linear-gradient(145deg, #ffffff, #fff1f2);
                 border-radius: 16px;
                 padding: 22px;
-                box-shadow: 0 12px 30px rgba(15, 23, 42, .08);
-                transition: .2s ease;
+                box-shadow: 0 12px 30px rgba(220, 38, 38, .12);
+                transition: .25s ease;
                 height: 100%;
                 min-height: 120px;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
+                border: 1px solid #fecaca;
             }
 
             .stat-card:hover {
                 transform: translateY(-4px);
+                box-shadow: 0 18px 40px rgba(220, 38, 38, .18);
             }
 
             .stat-icon {
-                width: 54px;
-                height: 54px;
-                border-radius: 14px;
+                width: 56px;
+                height: 56px;
+                border-radius: 16px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -33,8 +38,12 @@
                 color: #fff;
             }
 
-            .bg-blue {
-                background: linear-gradient(135deg, #2563eb, #1e40af);
+            .bg-red {
+                background: linear-gradient(135deg, #dc2626, #b91c1c);
+            }
+
+            .bg-pink {
+                background: linear-gradient(135deg, #fb7185, #e11d48);
             }
 
             .bg-green {
@@ -45,23 +54,12 @@
                 background: linear-gradient(135deg, #f97316, #ea580c);
             }
 
-            .bg-red {
-                background: linear-gradient(135deg, #dc2626, #b91c1c);
-            }
-
             .table-card {
-                background: #fff;
+                background: #ffffff;
                 border-radius: 16px;
                 padding: 18px;
-                box-shadow: 0 10px 26px rgba(15, 23, 42, .08);
-            }
-
-            .cursor-pointer {
-                cursor: pointer;
-            }
-
-            .stat-card:hover {
-                box-shadow: 0 16px 36px rgba(15, 23, 42, .12);
+                border: 1px solid #fecaca;
+                box-shadow: 0 10px 26px rgba(220, 38, 38, .12);
             }
 
             .super-calendar {
@@ -78,13 +76,13 @@
                 text-align: center;
                 font-size: 13px;
                 font-weight: 600;
-                color: #64748b;
+                color: #6b7280;
             }
 
             .calendar-day {
                 height: 46px;
                 border-radius: 12px;
-                background: #f8fafc;
+                background: #fef2f2;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -95,11 +93,11 @@
             }
 
             .calendar-day:hover {
-                background: #e0f2fe;
+                background: #ffe4e6;
             }
 
             .calendar-day.today {
-                background: linear-gradient(135deg, #2563eb, #1e40af);
+                background: linear-gradient(135deg, #dc2626, #fb7185);
                 color: #fff;
             }
 
@@ -107,82 +105,157 @@
                 content: '';
                 width: 6px;
                 height: 6px;
-                background: #22c55e;
+                background: #16a34a;
                 border-radius: 50%;
                 position: absolute;
                 bottom: 6px;
             }
         </style>
+
+        <!-- Page Header -->
         <div class="mb-4">
-            <h3 class="fw-bold">Dashboard</h3>
-            <small class="text-muted">Overview of your admin panel</small>
+            <h3 class="fw-bold">E-commerce Dashboard</h3>
+            <small class="text-muted">Overview of your online store</small>
         </div>
+
+        <!-- Stats -->
         <div class="mb-4 row g-4">
 
             <div class="col-xl-3 col-md-6">
-                <a href="{{ route('applied.users') }}" class="text-decoration-none text-dark">
-                    <div class="stat-card d-flex justify-content-between">
-                        <div>
-                            <small class="text-muted">Today Applied Candidates</small>
-                            <h3 class="mt-1 fw-bold">{{ $todayjobApplicationCount ?? 0 }}</h3>
-                        </div>
-                        <div class="stat-icon bg-orange">
-                            <i class="fa fa-file-alt"></i>
-                        </div>
+                <div class="stat-card">
+                    <div>
+                        <small class="text-muted">Today Orders</small>
+                        <h3 class="mt-1 fw-bold">12</h3>
                     </div>
-                </a>
+                    <div class="stat-icon bg-red">
+                        <i class="fa fa-shopping-cart"></i>
+                    </div>
+                </div>
             </div>
 
             <div class="col-xl-3 col-md-6">
-                <a href="{{ route('users') }}" class="text-decoration-none text-dark">
-                    <div class="cursor-pointer stat-card d-flex justify-content-between">
-                        <div>
-                            <small class="text-muted">Total Users</small>
-                            <h3 class="mt-1 fw-bold">{{ $users ?? '0' }}</h3>
-                        </div>
-                        <div class="stat-icon bg-blue">
-                            <i class="fa fa-users"></i>
-                        </div>
+                <div class="stat-card">
+                    <div>
+                        <small class="text-muted">Total Customers</small>
+                        <h3 class="mt-1 fw-bold">1,245</h3>
                     </div>
-                </a>
+                    <div class="stat-icon bg-pink">
+                        <i class="fa fa-users"></i>
+                    </div>
+                </div>
             </div>
 
             <div class="col-xl-3 col-md-6">
-                <a href="{{ route('active.jobs') }}" class="text-decoration-none text-dark">
-                    <div class="stat-card d-flex justify-content-between">
-                        <div>
-                            <small class="text-muted">Active Jobs</small>
-                            <h3 class="mt-1 fw-bold">{{ $activeJobs ?? '0' }}</h3>
-                        </div>
-                        <div class="stat-icon bg-green">
-                            <i class="fa fa-briefcase"></i>
-                        </div>
+                <div class="stat-card">
+                    <div>
+                        <small class="text-muted">Active Products</small>
+                        <h3 class="mt-1 fw-bold">320</h3>
                     </div>
-                </a>
+                    <div class="stat-icon bg-green">
+                        <i class="fa fa-box"></i>
+                    </div>
+                </div>
             </div>
 
             <div class="col-xl-3 col-md-6">
-                <a href="{{ route('expire.jobs') }}" class="text-decoration-none text-dark">
-                    <div class="stat-card d-flex justify-content-between">
-                        <div>
-                            <small class="text-muted">Expired Jobs</small>
-                            <h3 class="mt-1 fw-bold">{{ $expireJobs ?? '0' }}</h3>
-                        </div>
-                        <div class="stat-icon bg-red">
-                            <i class="fa fa-ban"></i>
-                        </div>
+                <div class="stat-card">
+                    <div>
+                        <small class="text-muted">Out of Stock</small>
+                        <h3 class="mt-1 fw-bold">18</h3>
                     </div>
-                </a>
+                    <div class="stat-icon bg-orange">
+                        <i class="fa fa-triangle-exclamation"></i>
+                    </div>
+                </div>
             </div>
 
         </div>
+
+        <!-- Calendar -->
         <div class="row g-4">
+            <div class="col-lg-6">
+
+                <!-- Recent Orders (Men's Clothing) -->
+                <div class="mb-4 table-card">
+                    <div class="mb-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="fa fa-shirt text-danger me-2"></i>
+                            Recent Orders
+                        </h5>
+                        <a href="#" class="btn btn-sm btn-light">View All</a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Product</th>
+                                    <th>Size</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#MC1023</td>
+                                    <td>Men Cotton Shirt</td>
+                                    <td>M</td>
+                                    <td><span class="badge bg-success">Delivered</span></td>
+                                    <td class="text-end">₹1,499</td>
+                                </tr>
+                                <tr>
+                                    <td>#MC1022</td>
+                                    <td>Casual T-Shirt</td>
+                                    <td>L</td>
+                                    <td><span class="badge bg-warning text-dark">Pending</span></td>
+                                    <td class="text-end">₹799</td>
+                                </tr>
+                                <tr>
+                                    <td>#MC1021</td>
+                                    <td>Slim Fit Jeans</td>
+                                    <td>32</td>
+                                    <td><span class="badge bg-danger">Cancelled</span></td>
+                                    <td class="text-end">₹1,999</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Low Stock Alerts (By Size) -->
+                <div class="table-card">
+                    <div class="mb-3">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="fa fa-triangle-exclamation text-warning me-2"></i>
+                            Low Stock Alerts (By Size)
+                        </h5>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Formal Shirt – Size M
+                            <span class="badge bg-danger">2 left</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Denim Jeans – Size 32
+                            <span class="badge bg-warning text-dark">4 left</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Polo T-Shirt – Size XL
+                            <span class="badge bg-danger">1 left</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
             <div class="col-lg-6">
                 <div class="table-card super-calendar">
                     <div class="mb-3 d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 fw-bold">
-                            <i class="fa fa-calendar-alt text-primary me-2"></i>
-                            Calendar
+                            <i class="fa fa-calendar-alt text-danger me-2"></i>
+                            Order Calendar
                         </h5>
 
                         <div class="calendar-controls">
@@ -210,11 +283,11 @@
                 </div>
             </div>
 
-            <div class="col-lg-6"></div>
         </div>
 
     </div>
 @endsection
+
 @section('scripts')
     <script>
         const calendarDays = document.getElementById("calendarDays");
@@ -242,7 +315,6 @@
 
             for (let day = 1; day <= lastDate; day++) {
                 let todayClass = '';
-                let eventClass = '';
 
                 const today = new Date();
                 if (
@@ -253,10 +325,8 @@
                     todayClass = 'today';
                 }
 
-
-
                 calendarDays.innerHTML += `
-                <div class="calendar-day ${todayClass} ${eventClass}">
+                <div class="calendar-day ${todayClass}">
                     ${day}
                 </div>
             `;

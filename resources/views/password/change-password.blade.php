@@ -58,7 +58,7 @@
         }
     </style>
 
-    <div class="card-panel">
+    <div class="card-panel" style="padding: 30px;">
         <div class="mb-3 d-flex align-items-center justify-content-between">
             <div>
                 <h4 class="mb-1 fw-bold">Change Password</h4>
