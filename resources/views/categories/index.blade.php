@@ -168,12 +168,16 @@
             });
 
             $('#saveCategoryBtn').on('click', function() {
+
                 let name = $('#new_category_name').val().trim();
+                let btn = $(this);
 
                 if (name == '') {
                     Swal.fire('Error', 'Category name is required', 'error');
                     return;
                 }
+
+                btn.prop('disabled', true).text('Saving...');
 
                 $.ajax({
                     url: "{{ route('categories.store') }}",
@@ -194,6 +198,7 @@
                         });
                     },
                     error: function() {
+                        btn.prop('disabled', false).text('Save');
                         Swal.fire('Error', 'Failed to add category', 'error');
                     }
                 });
@@ -210,13 +215,17 @@
             });
 
             $('#updateCategoryBtn').on('click', function() {
+
                 let id = $('#edit_category_id').val();
                 let name = $('#edit_category_name').val();
+                let btn = $(this);
 
                 if (name == '') {
                     Swal.fire('Error', 'Category name is required', 'error');
                     return;
                 }
+
+                btn.prop('disabled', true).text('Updating...');
 
                 $.ajax({
                     url: "{{ route('categories.update') }}",
@@ -236,6 +245,7 @@
                         }).then(() => location.reload());
                     },
                     error: function() {
+                        btn.prop('disabled', false).text('Update');
                         Swal.fire('Error', 'Failed to update category', 'error');
                     }
                 });

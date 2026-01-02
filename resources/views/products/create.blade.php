@@ -208,6 +208,9 @@
                 formData.append('gallery[]', file);
             });
 
+            let btn = $(this);
+            btn.prop('disabled', true).text('Saving...');
+
             $.ajax({
                 url: "{{ route('products.store') }}",
                 type: "POST",
@@ -224,6 +227,7 @@
                     });
                 },
                 error: function(xhr) {
+                    btn.prop('disabled', false).html('<i class="fa fa-save"></i> Save Product');
                     let msg = 'Something went wrong!';
                     if (xhr.responseJSON?.message) {
                         msg = xhr.responseJSON.message;
