@@ -6,6 +6,7 @@ use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CouponController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,6 +24,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -46,6 +48,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/change-password', [ChangePasswordController::class, 'index'])->name('change.password');
     Route::post('/update-password', [ChangePasswordController::class, 'updatePassword'])->name('update.password');
 
+    Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
+    Route::post('/coupons/store', [CouponController::class, 'store'])->name('coupons.store');
+    Route::delete('/coupons/{id}', [CouponController::class, 'destroy'])->name('coupons.destroy');
+    Route::post('/coupons/status', [CouponController::class, 'updateStatus'])->name('coupons.toggle-status');
+    Route::post('/coupons/update', [CouponController::class, 'update'])->name('coupons.update');
 
 });
 

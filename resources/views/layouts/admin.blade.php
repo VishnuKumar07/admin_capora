@@ -600,13 +600,7 @@
                                         <span class="label">Categories</span>
                                     </a>
                                 </li>
-                                <li>
-                                    <a href="{{ route('inventories.index') }}"
-                                        class="{{ request()->routeIs('inventories.index*') ? 'active' : '' }}">
-                                        <span class="icon"><i class="fa-solid fa-warehouse"></i></span>
-                                        <span class="label">Inventory</span>
-                                    </a>
-                                </li>
+
                             </ul>
                         </div>
                         <div>
@@ -633,7 +627,6 @@
                             </ul>
                         </div>
 
-                        <!-- Customers -->
                         <div>
                             <div class="sidebar-section-title">Customers</div>
                             <ul class="dash-menu">
@@ -647,50 +640,51 @@
                             </ul>
                         </div>
 
-                        <!-- Marketing -->
                         <div>
                             <div class="sidebar-section-title">Marketing</div>
                             <ul class="dash-menu">
                                 <li>
-                                    <a href="#">
+                                    <a href="{{ route('coupons.index') }}"
+                                        class="{{ request()->routeIs('coupons.index') ? 'active' : '' }}">
                                         <span class="icon"><i class="fa-solid fa-tags"></i></span>
                                         <span class="label">Coupons</span>
                                     </a>
                                 </li>
-                                <li>
+                                {{-- <li>
                                     <a href="#">
                                         <span class="icon"><i class="fa-solid fa-images"></i></span>
                                         <span class="label">Banners</span>
                                     </a>
-                                </li>
+                                </li> --}}
                             </ul>
                         </div>
 
-                        <!-- Reports -->
                         <div>
                             <div class="sidebar-section-title">Reports</div>
                             <ul class="dash-menu">
                                 <li>
+                                    <a href="{{ route('inventories.index') }}"
+                                        class="{{ request()->routeIs('inventories.index*') ? 'active' : '' }}">
+                                        <span class="icon"><i class="fa-solid fa-warehouse"></i></span>
+                                        <span class="label">Inventory Report</span>
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="#">
-                                        <span class="icon"><i class="fa-solid fa-chart-column"></i></span>
-                                        <span class="label">Product Report</span>
+                                        <span class="icon"><i class="fa-solid fa-dollar-sign"></i></span>
+                                        <span class="label">Sales Report</span>
                                     </a>
                                 </li>
                             </ul>
                         </div>
 
-                        <!-- System -->
                         <div>
                             <div class="sidebar-section-title">System</div>
                             <ul class="dash-menu">
+
                                 <li>
-                                    <a href="#">
-                                        <span class="icon"><i class="fa fa-gear"></i></span>
-                                        <span class="label">Settings</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('change.password') }}">
+                                    <a href="{{ route('change.password') }}"
+                                        class="{{ request()->routeIs('change.password') ? 'active' : '' }}">
                                         <span class="icon"><i class="fa fa-key"></i></span>
                                         <span class="label">Change Password</span>
                                     </a>
