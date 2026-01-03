@@ -683,6 +683,14 @@
                             <ul class="dash-menu">
 
                                 <li>
+                                    <a href="{{ route('settings.payment.methods') }}"
+                                        class="{{ request()->routeIs('settings.payment.methods') ? 'active' : '' }}">
+                                        <span class="icon"><i class="fa-solid fa-credit-card"></i></span>
+                                        <span class="label">Payment Methods</span>
+                                    </a>
+                                </li>
+
+                                <li>
                                     <a href="{{ route('change.password') }}"
                                         class="{{ request()->routeIs('change.password') ? 'active' : '' }}">
                                         <span class="icon"><i class="fa fa-key"></i></span>

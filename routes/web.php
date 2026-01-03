@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CouponController;
@@ -53,6 +54,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/coupons/{id}', [CouponController::class, 'destroy'])->name('coupons.destroy');
     Route::post('/coupons/status', [CouponController::class, 'updateStatus'])->name('coupons.toggle-status');
     Route::post('/coupons/update', [CouponController::class, 'update'])->name('coupons.update');
+
+    Route::get('/settings/payment-methods', [SettingsController::class, 'paymentMethods'])->name('settings.payment.methods');
+    Route::post('/settings/payment-methods/update', [SettingsController::class, 'updatepaymentMethods'])->name('settings.payment.methods.update');
 
 });
 
