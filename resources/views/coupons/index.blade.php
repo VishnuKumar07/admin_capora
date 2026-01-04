@@ -163,7 +163,7 @@
                             <select name="type" id="type" class="select2">
                                 <option value="">Select Discount Type</option>
                                 <option value="percentage">Percentage</option>
-                                <option value="fixed">Fixed Amount</option>
+                                <option value="flat">Flat</option>
                             </select>
                             <span class="text-danger" id="type_error"></span>
                         </div>

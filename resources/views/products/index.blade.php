@@ -50,6 +50,30 @@
         input:checked+.slider:before {
             transform: translateX(22px);
         }
+
+        .table-scroll-x {
+            overflow-x: auto;
+            overflow-y: hidden;
+            width: 100%;
+        }
+
+        /* Optional: smoother scrollbar */
+        .table-scroll-x::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-scroll-x::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+
+        .table-scroll-x::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .table-scroll-x table {
+            min-width: 1200px;
+        }
     </style>
 
     <div class="card-panel product-card">
@@ -60,16 +84,24 @@
             </a>
         </div>
 
-        <div class="table-responsive">
-            <table class="table text-center align-middle table-bordered">
+        <div class="table-scroll-x">
+            <table class="table mb-0 text-center align-middle table-bordered">
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
                         <th>Image</th>
                         <th>Product</th>
+                        <th>Category</th>
+                        <th>Size</th>
+                        <th>Mrp</th>
                         <th>Price</th>
+                        <th>Save Amount</th>
+                        <th>Discount Type</th>
+                        <th>Discount Value</th>
                         <th>Stock</th>
                         <th>Stock Status</th>
+                        <th>Label</th>
+                        <th>Product Description</th>
                         <th>Product Status</th>
                         <th width="120">Action</th>
                     </tr>
@@ -89,15 +121,40 @@
                                 <strong>{{ $product->name }}</strong><br>
                                 <small class="text-muted">{{ $product->category->name ?? 'N/A' }}</small>
                             </td>
+                            <td>
+                                {{ $product->category->name ?? '-' }}
+                            </td>
+                            <td>
+                                {{ $product->size ?? '-' }}
+                            </td>
+                            <td>
+                                <span class="fw-bold">
+                                    {{ $product->mrp !== null ? '₹' . number_format($product->mrp, 2) : '-' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="fw-bold">₹{{ number_format($product->price, 2) }}</span>
+                            </td>
+                            <td>
+                                <span class="fw-bold">
+                                    {{ $product->save_amount !== null ? '₹' . number_format($product->save_amount, 2) : '-' }}
+                                </span>
+                            </td>
 
                             <td>
-                                @if ($product->sale_price)
-                                    <span class="text-danger fw-bold">₹{{ number_format($product->sale_price, 2) }}</span>
-                                    <del class="text-muted">₹{{ number_format($product->price, 2) }}</del>
+                                {{ $product->discount_type ? ucfirst($product->discount_type) : '-' }}
+                            </td>
+
+                            <td>
+                                @if ($product->discount_type == 'percentage' && $product->discount_value)
+                                    {{ $product->discount_value }}%
+                                @elseif ($product->discount_type == 'amount' && $product->discount_value)
+                                    ₹{{ number_format($product->discount_value, 2) }}
                                 @else
-                                    <span class="fw-bold">₹{{ number_format($product->price, 2) }}</span>
+                                    -
                                 @endif
                             </td>
+
                             <td>
                                 {{ $product->stock ?? 0 }}
                             </td>
@@ -108,6 +165,26 @@
                                 @else
                                     <span class="badge bg-danger">Out of Stock</span>
                                 @endif
+                            </td>
+
+                            @php
+                                $label = strtolower($product->label ?? 'none');
+
+                                $badgeClasses = [
+                                    'none' => 'bg-secondary',
+                                    'new' => 'bg-success',
+                                    'trending' => 'bg-warning text-dark',
+                                    'sale' => 'bg-danger',
+                                ];
+                            @endphp
+
+                            <td>
+                                <span class="badge {{ $badgeClasses[$label] ?? 'bg-secondary' }}">
+                                    {{ ucfirst($label) }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ $product->description ?? '-' }}
                             </td>
 
                             <td>
@@ -130,7 +207,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center text-muted">
+                            <td colspan="14" class="text-center text-muted">
                                 No products found
                             </td>
                         </tr>

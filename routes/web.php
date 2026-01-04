@@ -58,6 +58,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/payment-methods', [SettingsController::class, 'paymentMethods'])->name('settings.payment.methods');
     Route::post('/settings/payment-methods/update', [SettingsController::class, 'updatepaymentMethods'])->name('settings.payment.methods.update');
 
+    Route::get('/settings/tax', [SettingsController::class, 'tax'])->name('settings.tax');
+    Route::post('/settings/tax/details/update', [SettingsController::class, 'updateTaxDetails'])->name('settings.tax.details.update');
+
+    Route::get('/settings/company', [SettingsController::class, 'company'])->name('settings.company');
+    Route::post('/settings/company/update', [SettingsController::class, 'updateCompany'])->name('settings.company.update');
+
+
+
+
 });
 
 require __DIR__.'/auth.php';

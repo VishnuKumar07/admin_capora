@@ -8,6 +8,7 @@ use App\Models\Inventory;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
@@ -25,43 +26,50 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate(
             [
-                'name'        => 'required|string|max:255',
-                'category_id' => 'required|exists:categories,id',
-                'price'       => 'required|numeric|min:0',
-                'sale_price'  => 'nullable|numeric|min:0',
-                'stock'       => 'required|integer|min:0',
-                'size'        => 'required',
-                'status'      => 'required|in:active,inactive',
-                'gallery'     => 'required|array|min:1',
-                'gallery.*'   => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+                'name'            => 'required|string|max:255',
+                'category_id'     => 'required|exists:categories,id',
+                'price'           => 'required|numeric|min:0',
+                'stock'           => 'required|integer|min:0',
+                'size'            => 'required',
+                'status'          => 'required|in:active,inactive',
+                'label'           => 'nullable|in:new,trending,sale',
+                'discount_status' => 'required|boolean',
+                'discount_type' => [
+                    'exclude_if:discount_status,0',
+                    'required_if:discount_status,1',
+                    Rule::in(['percentage', 'amount']),
+                ],
+                'discount_value' => [
+                    'exclude_if:discount_status,0',
+                    'required_if:discount_status,1',
+                    'numeric',
+                    'min:1',
+                ],
+                'gallery'         => 'required|array|min:1',
+                'gallery.*'       => 'image|mimes:jpg,jpeg,png,webp|max:2048',
             ],
             [
-                'name.required'        => 'Product name is required.',
-                'category_id.required' => 'Please select a category.',
-                'category_id.exists'   => 'Selected category is invalid.',
-                'price.required'       => 'Product price is required.',
-                'price.numeric'        => 'Price must be a number.',
-                'sale_price.numeric'   => 'Sale price must be a number.',
-                'stock.required'       => 'Stock quantity is required.',
-                'stock.integer'        => 'Stock must be a valid number.',
-                'size.required'        => 'Please select a size.',
-                'status.required'      => 'Product status is required.',
-                'status.in'            => 'Invalid product status.',
-                'gallery.required'     => 'Please upload at least one product image.',
-                'gallery.array'        => 'Gallery must be an image array.',
-                'gallery.*.image'      => 'Each file must be an image.',
-                'gallery.*.mimes'      => 'Images must be jpg, jpeg, png, or webp.',
-                'gallery.*.max'        => 'Each image must be less than 2MB.',
+                'discount_type.required_if' =>
+                    'Please select a discount type (Percentage or Amount).',
+
+                'discount_value.required_if' =>
+                    'Please enter the discount value.',
             ]
         );
 
         $slug = Str::slug($request->name);
-        $count = Product::where('slug', 'LIKE', "{$slug}%")->count();
-        if ($count > 0) {
-            $slug = $slug . '-' . ($count + 1);
+        if (Product::where('slug', $slug)->exists()) {
+            $slug .= '-' . time();
         }
+
+        $price        = $request->price;
+        $mrp          = $request->mrp ?? $price;
+        $saveAmount   = $request->save_amount ?? 0;
+        $discountType = $request->discount_type;
+        $discountVal  = $request->discount_value;
 
         $galleryImages = [];
         $thumbnailPath = null;
@@ -81,28 +89,37 @@ class ProductController extends Controller
         }
 
         $product = Product::create([
-            'name'        => $request->name,
-            'slug'        => $slug,
-            'category_id' => $request->category_id,
-            'size'        => $request->size,
-            'price'       => $request->price,
-            'sale_price'  => $request->sale_price,
-            'stock'       => $request->stock,
-            'stock_status'=> $request->stock > 0 ? 'in_stock' : 'out_of_stock',
-            'description' => $request->description,
-            'thumbnail'   => $thumbnailPath,
-            'gallery'     => json_encode($galleryImages),
-            'status'      => $request->status,
+            'name'            => $request->name,
+            'slug'            => $slug,
+            'category_id'     => $request->category_id,
+            'size'            => $request->size,
+            'price'           => $request->filled('price') ? $request->price : null,
+            'discount_status' => $request->discount_status,
+            'mrp'             => $request->filled('mrp') ? $request->mrp : null,
+            'save_amount'     => $request->filled('save_amount') ? $request->save_amount : null,
+            'discount_type'   => $request->filled('discount_type') ? $request->discount_type : null,
+            'discount_value'  => $request->filled('discount_value') ? $request->discount_value : null,
+            'stock'           => $request->stock,
+            'stock_status'    => $request->stock > 0 ? 'in_stock' : 'out_of_stock',
+            'description'     => $request->description,
+            'thumbnail'       => $thumbnailPath,
+            'gallery'         => json_encode($galleryImages),
+            'label'           => $request->label,
+            'status'          => $request->status,
         ]);
+
 
         Inventory::create([
-            'product_id'    => $product->id,
-            'stock'         => $request->stock,
-            'status'        => 'active',
-            'stock_status'  => $request->stock > 0 ? 'in_stock' : 'out_of_stock',
+            'product_id'   => $product->id,
+            'stock'        => $request->stock,
+            'status'       => 'active',
+            'stock_status' => $request->stock > 0 ? 'in_stock' : 'out_of_stock',
         ]);
 
-        return redirect()->route('products.index')->with('success', 'Product added successfully!');
+        return response()->json([
+            'status'  => true,
+            'message' => 'Product added successfully!',
+        ]);
     }
 
     public function delete(Request $request)
@@ -165,29 +182,59 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'price'       => 'required|numeric|min:0',
-            'sale_price'  => 'nullable|numeric|min:0',
-            'stock'       => 'required|integer|min:0',
-            'size'        => 'required',
-            'status'      => 'required|in:active,inactive',
-            'gallery.*'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
+        $request->validate(
+            [
+                'name'            => 'required|string|max:255',
+                'category_id'     => 'required|exists:categories,id',
+                'price'           => 'required|numeric|min:0',
+                'stock'           => 'required|integer|min:0',
+                'size'            => 'required',
+                'status'          => 'required|in:active,inactive',
+                'label'           => 'nullable|in:new,trending,sale',
+
+                'discount_status' => 'required|boolean',
+
+                'discount_type' => [
+                    'exclude_if:discount_status,0',
+                    'required_if:discount_status,1',
+                    Rule::in(['percentage', 'amount']),
+                ],
+
+                'discount_value' => [
+                    'exclude_if:discount_status,0',
+                    'required_if:discount_status,1',
+                    'numeric',
+                    'min:1',
+                ],
+
+                'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            ],
+            [
+                'discount_type.required_if' =>
+                    'Please select a discount type (Percentage or Amount).',
+
+                'discount_value.required_if' =>
+                    'Please enter the discount value.',
+            ]
+        );
 
         $product = Product::findOrFail($id);
 
         if ($product->name !== $request->name) {
             $slug = Str::slug($request->name);
-            $count = Product::where('slug', 'LIKE', "$slug%")->where('id', '!=', $id)->count();
+            $count = Product::where('slug', 'LIKE', "$slug%")
+                ->where('id', '!=', $id)
+                ->count();
+
             if ($count > 0) {
                 $slug .= '-' . ($count + 1);
             }
+
             $product->slug = $slug;
         }
 
         if ($request->hasFile('gallery')) {
+
             if ($product->gallery) {
                 foreach (json_decode($product->gallery) as $img) {
                     if (file_exists(public_path($img))) {
@@ -207,23 +254,41 @@ class ProductController extends Controller
             $product->thumbnail = $gallery[0] ?? null;
         }
 
+        if ($request->discount_status == 1) {
+            $mrp         = $request->mrp ?? $request->price;
+            $saveAmount  = $request->save_amount ?? 0;
+            $discountType = $request->discount_type;
+            $discountVal  = $request->discount_value;
+        } else {
+            $mrp = null;
+            $saveAmount = null;
+            $discountType = null;
+            $discountVal = null;
+        }
+
         $product->update([
-            'name'        => $request->name,
-            'category_id' => $request->category_id,
-            'price'       => $request->price,
-            'sale_price'  => $request->sale_price,
-            'stock'       => $request->stock,
-            'size'        => $request->size,
-            'status'      => $request->status,
-            'stock_status'=> $request->stock > 0 ? 'in_stock' : 'out_of_stock',
-            'description' => $request->description,
+            'name'            => $request->name,
+            'category_id'     => $request->category_id,
+            'size'            => $request->size,
+            'price'           => $request->price,
+            'discount_status' => $request->discount_status,
+            'mrp'             => $mrp,
+            'save_amount'     => $saveAmount,
+            'discount_type'   => $discountType,
+            'discount_value'  => $discountVal,
+            'stock'           => $request->stock,
+            'stock_status'    => $request->stock > 0 ? 'in_stock' : 'out_of_stock',
+            'description'     => $request->description,
+            'label'           => $request->label,
+            'status'          => $request->status,
         ]);
 
         Inventory::updateOrCreate(
             ['product_id' => $product->id],
             [
-                'stock' => $request->stock,
-                'status' => $request->status
+                'stock'        => $request->stock,
+                'status'       => $request->status,
+                'stock_status' => $request->stock > 0 ? 'in_stock' : 'out_of_stock',
             ]
         );
 

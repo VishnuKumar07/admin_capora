@@ -679,17 +679,8 @@
                         </div>
 
                         <div>
-                            <div class="sidebar-section-title">System</div>
+                            <div class="sidebar-section-title">Password</div>
                             <ul class="dash-menu">
-
-                                <li>
-                                    <a href="{{ route('settings.payment.methods') }}"
-                                        class="{{ request()->routeIs('settings.payment.methods') ? 'active' : '' }}">
-                                        <span class="icon"><i class="fa-solid fa-credit-card"></i></span>
-                                        <span class="label">Payment Methods</span>
-                                    </a>
-                                </li>
-
                                 <li>
                                     <a href="{{ route('change.password') }}"
                                         class="{{ request()->routeIs('change.password') ? 'active' : '' }}">
@@ -697,6 +688,36 @@
                                         <span class="label">Change Password</span>
                                     </a>
                                 </li>
+                            </ul>
+                        </div>
+
+
+                        <div>
+                            <div class="sidebar-section-title">System</div>
+                            <ul class="dash-menu">
+                                <li>
+                                    <a href="{{ route('settings.company') }}"
+                                        class="{{ request()->routeIs('settings.company') ? 'active' : '' }}">
+                                        <span class="icon"><i class="fa-solid fa-building"></i></span>
+                                        <span class="label">Company Settings</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('settings.payment.methods') }}"
+                                        class="{{ request()->routeIs('settings.payment.methods') ? 'active' : '' }}">
+                                        <span class="icon"><i class="fa-solid fa-credit-card"></i></span>
+                                        <span class="label">Payment Methods Settings</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="{{ route('settings.tax') }}"
+                                        class="{{ request()->routeIs('settings.tax') ? 'active' : '' }}">
+                                        <span class="icon"><i class="fa-solid fa-receipt"></i></span>
+                                        <span class="label">Tax (GST) Settings</span>
+                                    </a>
+                                </li>
+
                                 <li>
                                     <a href="#" id="logout_btn">
                                         <span class="icon"><i class="fa fa-right-from-bracket"></i></span>
@@ -707,7 +728,6 @@
                                 </li>
                             </ul>
                         </div>
-
                     </div>
 
                     <div class="sidebar-footer">

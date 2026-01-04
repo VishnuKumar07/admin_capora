@@ -1,7 +1,6 @@
 @extends('layouts.admin')
-
 @section('page_title', 'Payment Methods')
-@section('page_breadcrumb', 'Settings / Payment Methods')
+
 
 @section('content')
     <div class="card-panel">
@@ -11,7 +10,6 @@
             <p class="mb-0 text-muted">Enable or disable payment options available at checkout.</p>
         </div>
 
-        {{-- ONLINE PAYMENT --}}
         <div class="p-4 mb-3 border rounded-3 d-flex align-items-center justify-content-between"
             style="background: rgba(255,255,255,.75)">
             <div class="gap-3 d-flex align-items-center">
@@ -38,7 +36,6 @@
             </div>
         </div>
 
-        {{-- CASH ON DELIVERY --}}
         <div class="p-4 mb-4 border rounded-3 d-flex align-items-center justify-content-between"
             style="background: rgba(255,255,255,.75)">
             <div class="gap-3 d-flex align-items-center">
@@ -118,7 +115,6 @@
                                 .text('Enabled');
                         }
                     }
-
                 });
             });
         });
