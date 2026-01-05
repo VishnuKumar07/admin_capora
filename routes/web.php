@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
@@ -64,8 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/company', [SettingsController::class, 'company'])->name('settings.company');
     Route::post('/settings/company/update', [SettingsController::class, 'updateCompany'])->name('settings.company.update');
 
-
-
+    Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 
 });
 

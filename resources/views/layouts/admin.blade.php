@@ -691,6 +691,20 @@
                             </ul>
                         </div>
 
+                        <div>
+                            <div class="sidebar-section-title">Contact</div>
+                            <ul class="dash-menu">
+                                <li>
+                                    <a href="{{ route('contact') }}"
+                                        class="{{ request()->routeIs('contact*') ? 'active' : '' }}">
+                                        <span class="icon">
+                                            <i class="fa-solid fa-address-book"></i>
+                                        </span>
+                                        <span class="label">Contact Enquiries</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
 
                         <div>
                             <div class="sidebar-section-title">System</div>
